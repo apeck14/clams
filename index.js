@@ -196,4 +196,4 @@ bot.on('reconnecting', () => {
     console.log('Clams is reconnecting...');
 });
 
-bot.login(token);
+bot.login(process.env.token);
