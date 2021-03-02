@@ -1,5 +1,5 @@
 const { MessageEmbed } = require('discord.js');
-const { hex, getMembers, clan, playerRating, designatedChannelID } = require('../util.js');
+const { hex, getMembers, clan, playerRating, privateChannelID } = require('../util.js');
 const { groupBy } = require("lodash");
 
 module.exports = {
@@ -8,7 +8,7 @@ module.exports = {
     async execute(message, arg, mdbClient, API_KEY) {
         const embed = new MessageEmbed().setColor(hex);
 
-        if (message.channel.id !== designatedChannelID) return message.channel.send(embed.setDescription(`This command can only be used in <#${designatedChannelID}>!`));
+        if (message.channel.id !== privateChannelID) return message.channel.send(embed.setDescription(`This command can only be used in <#${privateChannelID}>!`));
 
         const collection = mdbClient.db("Clan").collection("Matches");
         const ogMembers = await getMembers(clan.tag, API_KEY.token());

@@ -18,6 +18,7 @@ exports.missedAttacksChannelID = "816435861033582642";
 exports.applyChannelID = "796185828366876702";
 exports.applyLogChannelID = "816435969070202950";
 exports.clanLogChannelID = "816436105779085366";
+exports.privateChannelID = "816445569777139712"
 exports.lastUpdated = new Date();
 
 const parseDate = date => {
