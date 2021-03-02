@@ -8,16 +8,16 @@ exports.clan = {
     logo: "https://cdn.royaleapi.com/static/img/badge/legendary-1/A_Char_Goblin_01.png?t=df40fd13c"
 }
 exports.serverEmojis = [
-    {"name": "cwtrophy", "input": "<:cwtrophy:802486800501309440>"},
-    {"name": "fame", "input": "<:fame:807475879215104020>"},
-    {"name": "swords", "input": "<:swords:807479415126622218>"}
+    {"name": "cwtrophy", "input": "<:cwtrophy:816373519872950282>"},
+    {"name": "fame", "input": "<:fame:816373547203035147>"},
+    {"name": "swords", "input": "<:swords:816373565523623987>"}
 ];
 exports.hex = "#8ad67d";
-exports.designatedChannelID = "592511340736937986";
-exports.missedAttacksChannelID = "592541532981035008";
-exports.applyChannelID = "592541532981035008";
-exports.applyLogChannelID = "592511340736937986";
-exports.clanLogChannelID = "592511340736937986";
+exports.designatedChannelID = "816334813962960926";
+exports.missedAttacksChannelID = "816435861033582642";
+exports.applyChannelID = "796185828366876702";
+exports.applyLogChannelID = "816435969070202950";
+exports.clanLogChannelID = "816436105779085366";
 exports.lastUpdated = new Date();
 
 const parseDate = date => {
