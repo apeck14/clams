@@ -1,0 +1,11 @@
+{
+  "name": "clams",
+  "version": "1.0.0",
+  "description": "Discord bot to track clan stats",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "Apehk",
+  "license": "ISC"
+}
