@@ -20,7 +20,7 @@ module.exports = {
         });
 
         if(player){
-            let members = await getMembers("#9L82QG8G", API_KEY.token(true));
+            let members = await getMembers(clan.tag, API_KEY.token(true));
             let logEmbed = new MessageEmbed().setTitle("__New Request!__").setColor(hex).setThumbnail(clan.logo);
             
             members = members.map(p => p.tag);
