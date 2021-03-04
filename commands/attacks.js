@@ -51,7 +51,7 @@ module.exports = {
                let relativeTime = `${Math.floor(mem.mins / 60)}h ${mem.mins % 60}m`;
                if(Math.floor(mem.mins / 60) === 0) relativeTime = relativeTime.substr(3);
 
-               desc += `• **${mem.name}** (${relativeTime})\n`;
+               desc += `•⭐ **${mem.name}** (${relativeTime})\n`;
            }
 
            embed = embed.setTitle(`__Completed War Attacks__`).setDescription(desc);
