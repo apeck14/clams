@@ -54,7 +54,7 @@ module.exports = {
                desc += `• **${mem.name}** (${relativeTime})\n`;
            }
 
-           embed = embed.setTitle(`__Completed Attacks Times__`).setDescription(desc);
+           embed = embed.setTitle(`__Completed War Attacks__`).setDescription(desc);
 
            return message.channel.send(addLUFooter(embed));
         }
