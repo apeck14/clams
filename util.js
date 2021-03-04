@@ -205,7 +205,7 @@ exports.createLBEmbed = async (members, mdbClient) => {
     const collection = mdbClient.db("Clan").collection("Matches");
     let embed = new MessageEmbed().setTitle('__Clams War Leaderboard__').setThumbnail(exports.clan.logo).setColor(exports.hex).setFooter(`Last Updated: ${exports.getMinsDiff(exports.lastUpdated)} min(s) ago | ?FAQ`);
     let winPercentages = [];
-    let top5 = "";
+    let top10 = "";
     let clanWins = 0;
     let clanLosses = 0;
 
@@ -242,25 +242,26 @@ exports.createLBEmbed = async (members, mdbClient) => {
     //sort by win percentage, lowest to greatest. ties result to whoever has more matches played
     winPercentages.sort((a, b) => {
         if(a.percent === b.percent){
-            if(a.wins + a.losses === b.wins + b.losses) return winPercentages.indexOf(b) - winPercentages.indexOf(a);
-            return (a.wins + a.losses) - (b.wins + b.losses);
+            if(a.wins + a.losses === b.wins + b.losses) return winPercentages.indexOf(a) - winPercentages.indexOf(b);
+            return (b.wins + b.losses) - (a.wins + a.losses);
         }
-        return a.percent - b.percent;
+        return b.percent - a.percent;
     });
 
     let wpLength = winPercentages.length;
 
-    //add top 5
-    for(let i = wpLength - 1; i > wpLength - 6; i--){
+    console.table(winPercentages)
+
+    //add top 10
+    for(let i = 0; i < 10; i++){
         let p = winPercentages[i];
-        if(i === wpLength - 1) top5 += `\n:first_place: **${p.name}**: ${p.percent}% (${p.wins}-${p.losses})`;
-        else if(i === wpLength - 2) top5 += `\n:second_place: **${p.name}**: ${p.percent}% (${p.wins}-${p.losses})`;
-        else if(i === wpLength - 3) top5 += `\n:third_place: **${p.name}**: ${p.percent}% (${p.wins}-${p.losses})`;
-        else if(i === wpLength - 4) top5 += `\n**4**.  **${p.name}**: ${p.percent}% (${p.wins}-${p.losses})`;
-        else top5 += `\n**5**.  **${p.name}**: ${p.percent}% (${p.wins}-${p.losses})`;
+        if(i === 0) top10 += `\n:first_place: **${p.name}**: ${p.percent}% (${p.wins}-${p.losses})`;
+        else if(i === 1) top10 += `\n:second_place: **${p.name}**: ${p.percent}% (${p.wins}-${p.losses})`;
+        else if(i === 2) top10 += `\n:third_place: **${p.name}**: ${p.percent}% (${p.wins}-${p.losses})`;
+        else top10 += `\n**${i+1}**.  **${p.name}**: ${p.percent}% (${p.wins}-${p.losses})`;
     }
 
-    return embed.setDescription(`**Total**: ${(clanWins/(clanLosses+clanWins) * 100).toFixed(1)}% (${clanWins}-${clanLosses})\n\n**__Top Players__**${top5}`);
+    return embed.setDescription(`**Total**: ${(clanWins/(clanLosses+clanWins) * 100).toFixed(1)}% (${clanWins}-${clanLosses})\n\n**__Top Players__**${top10}`);
 };
 exports.createStatsEmbed = async (tag, collection) => {
     let embed = new MessageEmbed().setColor(exports.hex);
