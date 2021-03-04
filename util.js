@@ -106,6 +106,7 @@ exports.isFinalWeek = async token => {
 };
 exports.getMinsDiff = (a, b) => {
     if(!b){
+        if(typeof a === "string" && a.indexOf(".000Z") >= 0) a = parseDate(a);
         const diff = Math.abs(new Date() - a);
         const mins = Math.ceil((diff/1000)/60);
         return mins;
