@@ -15,7 +15,7 @@ module.exports = {
         //show completed matches, and time of last match
         if(arg.toLowerCase() === 'c'){
            const collection = mdbClient.db("Clan").collection("Matches");
-           let memberTags = await getMembers(clan.tag, API_KEY.token())
+           let memberTags = await getMembers(clan.tag, API_KEY.token());
            memberTags = memberTags.map(mem => mem.tag);
            const results = await collection.find({"tag": {$in: memberTags}}).toArray();
            const membersMatches = groupBy(results, mem => mem.tag);
@@ -27,11 +27,9 @@ module.exports = {
                const len = membersMatches[mem].length;
                let attacksToday = 0;
 
-               if(len > 4){
-                   for(let i = len - 1; i >= len - 4; i--){
-                       if(isWithinWarDay(membersMatches[mem][i].battleTime)) attacksToday += membersMatches[mem][i].matchCount;
-                   }
-               }
+                for(let i = len - 1; i >= 0; i--){
+                    if(isWithinWarDay(membersMatches[mem][i].battleTime)) attacksToday += membersMatches[mem][i].matchCount;
+                }
 
                //if player completed all matches today
                if(attacksToday >= 4){
@@ -54,7 +52,7 @@ module.exports = {
                desc += `•⭐ **${mem.name}** (${relativeTime})\n`;
            }
 
-           embed = embed.setTitle(`__Completed War Attacks__`).setDescription(desc);
+           embed = embed.setTitle(`__Completed War Attacks__`).setDescription(`**Total Members**: ${finishedMembers.length}\n\n${desc}`);
 
            return message.channel.send(addLUFooter(embed));
         }
