@@ -21,6 +21,7 @@ module.exports = {
 
         if(player){
             let members = await getMembers(clan.tag, API_KEY.token(true));
+            members = members.map(p => p.tag);
             let logEmbed = new MessageEmbed().setTitle("__New Request!__").setColor(hex).setThumbnail(clan.logo);
             
             const [clanRating, ratingObj] = await Promise.all([playerRating(members, API_KEY), playerRating(arg, API_KEY)]).catch(() => {

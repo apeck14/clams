@@ -606,7 +606,7 @@ exports.playerRating = async (tag, API_KEY) => {
 
     //if array of players is passed
     if(Array.isArray(tag)){
-        let players = tag.map(p => axios.get(`https://proxy.royaleapi.dev/v1/players/%23${p.tag.substr(1)}`, { headers : { 'Authorization': 'Bearer ' + API_KEY.token(true) } }));
+        let players = tag.map(p => axios.get(`https://proxy.royaleapi.dev/v1/players/%23${p.substr(1)}`, { headers : { 'Authorization': 'Bearer ' + API_KEY.token(true) } }));
         players = await Promise.all(players);
         let ratings = players.map(p => (cardRating(p) * cardWeight) + (trophyRating(p) * trophyWeight) + (challRating(p) * challWeight) + achievements(p));
         ratings = ratings.map(p => p > 99 ? 99 : p);
