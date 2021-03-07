@@ -424,11 +424,41 @@ exports.addLUFooter = embed => {
 exports.playerRating = async (tag, API_KEY) => {
     /* 
     ----- WEIGHTS -----
-    - Cards (50%)
-    - Best Trophies (20%)
-    - CRL (Max Chall. Wins) (15%)
-    - Challenges (15%)
+    - Cards (40%)
+    - Best Trophies (30%)
+    - Max Chall. Wins (30%)
+
+    War Day Wins:
+        - <= 50: -3
+        - >= 200: +1
+        - >= 250: +3
+        - >= 300: +5
+
+    Badges:
+        - 1x Chall. Win: +2
+        - 5x Chall. Win: +3
+        - 10x Chall. Win: +5
+        - 50x Chall. Win: +10
+        - 100x Chall. Win: +20
+
+        - 1x Grand Chall. Win: +5
+        - 5x Grand Chall. Win: +10
+        - 10x Grand Chall. Win: +25
+        - 50x Grand Chall. Win: +50
+        - 100x Grand Chall. Win: +100
+
+        - Clash Royale League Badge <= 17: +6
+        - Clash Royale League Badge <= 18: +8
+        - Clash Royale League Badge === 20: +10
+
+        - Tournament Finish Top 1000: +5
+        - Tournament Finish Top 500: +7
+        - Tournament Finish Top 100: +15
+        - Tournament Finish Top 10: +25
     */
+    const cardWeight = 0.4;
+    const trophyWeight = 0.3;
+    const challWeight = 0.3;
     const cardRating = player => {
         //sort cars by lvl
         const cards = player.data.cards.sort((a,b) => {
@@ -440,7 +470,7 @@ exports.playerRating = async (tag, API_KEY) => {
                     
         let rating = 0;
 
-        const iterations = cards.length < 75 ? cards.length : 75;
+        const iterations = cards.length < 80 ? cards.length : 80;
 
         for(let i = 0; i < iterations; i++){
             const diff = cards[i].maxLevel - cards[i].level;
@@ -450,9 +480,8 @@ exports.playerRating = async (tag, API_KEY) => {
             else if(diff === 3) rating += 0.08;
         }            
 
-        return (rating / 75 * 100) - 1;
+        return (rating / iterations * 100) - 1;
     };
-
     const trophyRating = player => {
         const bestTrophies = player.data.bestTrophies;
 
@@ -515,8 +544,7 @@ exports.playerRating = async (tag, API_KEY) => {
 
         else return 99;
     };
-
-    const crlRating = player => {
+    const challRating = player => {
         const maxWins = player.data.challengeMaxWins;
         let rating = 0;
 
@@ -533,31 +561,55 @@ exports.playerRating = async (tag, API_KEY) => {
 
         return rating - 1;
     };
-
-    const challRating = player => {
-        const classicChallBadge = player.data.badges.filter(b => b.name === "Classic12Wins");
-        const grandChallBadge = player.data.badges.filter(b => b.name === "Grand12Wins");
-        const classicChallWins = classicChallBadge.length === 1 ? classicChallBadge[0].progress : 0;
-        const grandChallWins = grandChallBadge.length === 1 ? grandChallBadge[0].progress : 0;
-
-        if(grandChallWins > 0) return 99;
-        else if(classicChallWins >= 10) return 96;
-
+    const achievements = player => {
+        const warWins = player.data.warDayWins;
+        const badges = player.data.badges;
         let rating = 0;
 
-        for(let i = 1; i < classicChallWins + 1; i++){
-            if(i === 1) rating += 60;
-            else if(i > 1 && i < 10) rating += 4;
+        //war wins
+        if(warWins <= 50) rating -= 3;
+        else if(warWins >= 300) rating += 5;
+        else if(warWins >= 250) rating += 3;
+        else if(warWins >= 200) rating += 1;
+
+        //badges
+        for(const b of badges){
+            if(b.name === "Classic12Wins"){ // Classic Chall
+                if(b.progress >= 100) rating += 20;
+                else if(b.progress >= 50) rating += 10;
+                else if(b.progress >= 10) rating += 5;
+                else if(b.progress >= 5) rating += 3;
+                else if(b.progress === 1) rating += 2;
+            }
+            else if(b.name === "Grand12Wins"){ // Grand Chall
+                if(b.progress >= 100) rating += 100;
+                else if(b.progress >= 50) rating += 50;
+                else if(b.progress >= 10) rating += 25;
+                else if(b.progress >= 5) rating += 15;
+                else if(b.progress === 1) rating += 7;
+            }
+            else if(b.name.indexOf("Crl") !== -1){ //CRL
+                if(b.progress === 20) rating += 10;
+                else if(b.progress >= 18) rating += 7;
+                else rating += 6;
+            }
+            else if(b.name.indexOf("Ladder") !== -1){ //Tournaments and Ladder Finishes
+                if(b.progress <= 10) rating += 25;
+                else if(b.progress <= 100) rating += 15;
+                else if(b.progress <= 500) rating += 7;
+                else rating += 5;
+            }
         }
 
-        return rating === 0 ? rating : rating - 1;
+        return rating;
     };
 
     //if array of players is passed
     if(Array.isArray(tag)){
-        let players = tag.map(p => axios.get(`https://proxy.royaleapi.dev/v1/players/%23${p.substr(1)}`, { headers : { 'Authorization': 'Bearer ' + API_KEY.token(true) } }));
+        let players = tag.map(p => axios.get(`https://proxy.royaleapi.dev/v1/players/%23${p.tag.substr(1)}`, { headers : { 'Authorization': 'Bearer ' + API_KEY.token(true) } }));
         players = await Promise.all(players);
-        const ratings = players.map(p => (cardRating(p) * 0.5) + (trophyRating(p) * 0.2) + (crlRating(p) * 0.15) + (challRating(p) * 0.15));
+        let ratings = players.map(p => (cardRating(p) * cardWeight) + (trophyRating(p) * trophyWeight) + (challRating(p) * challWeight) + achievements(p));
+        ratings = ratings.map(p => p > 99 ? 99 : p);
 
         ratings.sort();
 
@@ -573,18 +625,20 @@ exports.playerRating = async (tag, API_KEY) => {
 
         const cardRatingINT = cardRating(player);
         const trophyRatingINT = trophyRating(player);
-        const crlRatingINT = crlRating(player);
         const challRatingINT = challRating(player);
-        const rating = Math.round((cardRatingINT * 0.5) + (trophyRatingINT * 0.2) + (crlRatingINT * 0.15) + (challRatingINT * 0.15));
+        const achievementsINT = achievements(player);
+        let rating = Math.round((cardRatingINT * cardWeight) + (trophyRatingINT * trophyWeight) + (challRatingINT * challWeight)) + achievementsINT;
+
+        if(rating > 99) rating =  99;
 
         return {
             "rating": rating,
             "tag": id,
             "name": name,
             "Cards (40%)": Math.round(cardRatingINT),
-            "Best Trophies (20%)": trophyRatingINT, 
-            "CRL (20%)": crlRatingINT,
-            "Challenges (20%)": challRatingINT
+            "Best Trophies (30%)": trophyRatingINT,
+            "Max Chall. Wins (30%)": challRatingINT,
+            "Achievements (+)": achievementsINT
         };
     }
 };
