@@ -23,8 +23,6 @@ module.exports = {
             let members = await getMembers(clan.tag, API_KEY.token(true));
             let logEmbed = new MessageEmbed().setTitle("__New Request!__").setColor(hex).setThumbnail(clan.logo);
             
-            members = members.map(p => p.tag);
-
             const [clanRating, ratingObj] = await Promise.all([playerRating(members, API_KEY), playerRating(arg, API_KEY)]).catch(() => {
                 message.channel.stopTyping();
                 return message.channel.send(embed.setDescription("Unexpected error. Try again."));
