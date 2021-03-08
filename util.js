@@ -251,8 +251,6 @@ exports.createLBEmbed = async (members, mdbClient) => {
 
     let wpLength = winPercentages.length;
 
-    console.table(winPercentages)
-
     //add top 10
     for(let i = 0; i < 10; i++){
         let p = winPercentages[i];
