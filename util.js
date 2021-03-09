@@ -160,7 +160,7 @@ exports.updateWarMatches = async (members, collection, token, raceDay, startTime
     
         if(log){
             for(const m of log.data){
-                if(m.type !== "riverRacePvP" && m.gameMode.name !== "CW_Duel_1v1") continue;
+                if(m.type !== "riverRacePvP" && m.type !== "boatBattle" && m.gameMode.name !== "CW_Duel_1v1") continue;
                 else if(!exports.isWithinWarDay(m.battleTime)) continue;
 
                 const matchExists = await collection.findOne({"tag": m.team[0].tag, "battleTime": m.battleTime});
@@ -175,17 +175,27 @@ exports.updateWarMatches = async (members, collection, token, raceDay, startTime
                         collection.deleteOne(raceMatches[0]);
                     }
 
-                    let match, type, win;
+                    let type, win, crowns, enemyCrowns;
                     const matches = m.team[0].cards.length / 8;
 
                     //set type
                     if(m.type === "riverRacePvP"){
                         type = "War";
-                        win = isWinner(m.team[0].crowns, m.opponent[0].crowns, m.type, matches);
+                        crowns = m.team[0].crowns;
+                        enemyCrowns = m.opponent[0].crowns;
+                        win = isWinner(crowns, enemyCrowns, m.type, matches);
                     }
                     else if(m.gameMode.name === "CW_Duel_1v1"){
                         type = "Duel";
-                        win = isWinner(m.team[0].crowns, m.opponent[0].crowns, m.gameMode.name, matches);
+                        crowns = m.team[0].crowns;
+                        enemyCrowns = m.opponent[0].crowns;
+                        win = isWinner(crowns, enemyCrowns, m.gameMode.name, matches);
+                    }
+                    else if(m.type === "boatBattle"){
+                        type = "Boat Battle";
+                        crowns = m.team[0].crowns;
+                        enemyCrowns = null;
+                        win = m.boatBattleWon;
                     }
 
                     //set raceDay
@@ -193,15 +203,15 @@ exports.updateWarMatches = async (members, collection, token, raceDay, startTime
                         if(isBetweenDates(m.battleTime, startTime, finishTime)) raceDay = true;
                     }
 
-                    match = {
+                    const match = {
                         tag: m.team[0].tag,
                         name: m.team[0].name,
                         clan: m.team[0].clan.tag,
                         type: type,
                         battleTime: m.battleTime,
                         won: win,
-                        crowns: m.team[0].crowns,
-                        enemyCrowns: m.opponent[0].crowns,
+                        crowns: crowns,
+                        enemyCrowns: enemyCrowns,
                         matchCount: matches,
                         raceDay: raceDay
                     };
@@ -375,8 +385,7 @@ exports.createAttacksEmbed = async (embed, members, mdbClient) => {
         if(membersMatches[mem.tag]){
             for(const m of membersMatches[mem.tag]) {
                 if(exports.isWithinWarDay(m.battleTime)){
-                    if(m.type === "War") count++;
-                    else if(m.type === "Duel") count += m.matchCount;
+                    count += matchCount;
                 }
             }
     
@@ -386,8 +395,7 @@ exports.createAttacksEmbed = async (embed, members, mdbClient) => {
                 unusedAtks.push({"name": mem.name, "attacksLeft": attacksLeft});
             }
         }
-        //if new member (no matches logged yet)
-        else newPlayers += `\n• **${mem.name}**`;
+        else newPlayers += `\n• **${mem.name}**`; //if new member (no matches logged yet)
     }
 
     if(unusedAtks.length === 0) return embed.setDescription(`All attacks have been used!`).setThumbnail();

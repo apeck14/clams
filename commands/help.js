@@ -12,7 +12,7 @@ module.exports = {
     if (!arg) {
       embed
         .setTitle('__Commands__')
-        .setDescription('• **?attacks <C>** - Get list of players with remaining war attacks\n• **?lb** - Get war leaderboard\n• **?stats <PLAYERTAG>** - Get war stats for a specific member\n• **?fw** - Get final week information for all opponents\n• **?overview** - Get the bottom performers/rated in the clan\n\n**__Other__**\n• **?faq** - FAQ for the bot\n• **?link <PLAYERTAG>** - Link your Clash Royale ID');
+        .setDescription('• **?attacks <C>** - Get list of players with remaining war attacks\n• **?lb** - Get war leaderboard\n• **?stats <PLAYERTAG>** - Get war stats for a specific member\n• **?fw** - Get final week information for all opponents\n• **?overview** - Get the bottom performers/rated in the clan\n• **?matches** - Get all members most recent war match times\n\n**__Other__**\n• **?faq** - FAQ for the bot\n• **?link <PLAYERTAG>** - Link your Clash Royale ID');
     }
 
     message.channel.send(embed);
