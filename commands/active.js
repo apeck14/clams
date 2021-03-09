@@ -7,7 +7,7 @@ module.exports = {
     name: 'active',
     description: 'determine if the clan should start attacking boats',
     async execute (message, arg, mdbClient, API_KEY){
-        let embed = new MessageEmbed().setColor(hex);
+        let embed = new MessageEmbed().setColor(hex).setThumbnail("https://cdn.royaleapi.com/static/img/badge/legendary-1/A_Char_Goblin_01.png?t=df40fd13c");
 
         if(message.channel.id !== designatedChannelID) return message.channel.send(embed.setDescription(`Please use my commands in <#${designatedChannelID}>.`));
 
