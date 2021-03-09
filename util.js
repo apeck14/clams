@@ -435,7 +435,7 @@ exports.createAttacksEmbed = async (embed, members, mdbClient) => {
 
 };
 exports.addLUFooter = embed => {
-    return embed.setFooter(`Last Updated: ${exports.getMinsDiff(exports.lastUpdated)} min(s) ago | ?FAQ`);
+    return embed.setFooter(`Matches Last Updated: ${exports.getMinsDiff(exports.lastUpdated)} min(s) ago | ?FAQ`);
 };
 
 exports.playerRating = async (tag, API_KEY) => {
