@@ -154,9 +154,11 @@ bot.once('ready', async () => {
 
         oppCollection.deleteMany({});
         collection.deleteMany({"raceDay": false});
+        collection.deleteMany({"type": "Boat Battle"});
         
         console.log("Deleted all Opp Matches from DB!")
         console.log("Deleted all non-race matches from DB!");
+        console.log("Deleted all boat battles from DB!");
     }, null, true, 'America/Chicago');
 
     missedAttacksMonJob.start();
