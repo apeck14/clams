@@ -14,7 +14,7 @@ module.exports = {
         const collection = mdbClient.db("Clan").collection("Matches");
         const clan = await axios.get(`https://proxy.royaleapi.dev/v1/clans/%23V2GQU/members`, { headers : { 'Authorization': 'Bearer ' + API_KEY.token() } });
         const lastSeen = clan.data.items.map(p => ({name: p.name, tag: p.tag, lastSeen: p.lastSeen})).filter(p => getMinsDiff(p.lastSeen) <= 10);
-        const results = await collection.find({"tag": {$in: lastSeen.map(mem => mem.tag)}, "raceDay": true}).toArray();
+        const results = await collection.find({"tag": {$in: lastSeen.map(mem => mem.tag)}}).toArray();
         const matches = groupBy(results, mem => mem.tag);
 
         const winFame = 192;
@@ -27,7 +27,11 @@ module.exports = {
             let count = 0;
 
             for(const m of matches[tag]){
-                if(isWithinWarDay(m.battleTime)) count += m.matchCount;
+                if(isWithinWarDay(m.battleTime)){
+                    count += m.matchCount;
+                    console.log(m);
+                    console.log(count)
+                }
             }
 
             if(count < 4){
@@ -38,18 +42,23 @@ module.exports = {
             }
         }
 
+        console.log(lastSeen)
+
         const onlyPlayersWithAttacks = lastSeen.filter(p => p.attacksLeft).sort((a, b) => {return b.attacksLeft - a.attacksLeft});
         const fameEstimation50WinRate = (Math.floor(attacksAvailable / 2) * lossFame) + (Math.ceil(attacksAvailable / 2) * winFame);
         const fameEstimationLosses = lossFame * attacksAvailable;
 
-        desc += `**Players w/ Attacks**: ${recentPlayersWithAttacks}\n**Attacks Available**: ${attacksAvailable}\n**Estimated Fame (50% W/L)**: ~${fameEstimation50WinRate}\n**Estimated Fame (All losses)**: ~${fameEstimationLosses}`;
     
-        if(onlyPlayersWithAttacks){
-            desc += "\n\n**__Players__**\n";
+        if(onlyPlayersWithAttacks.length > 0){
+            desc += `**Players w/ Attacks**: ${recentPlayersWithAttacks}\n**Attacks Available**: ${attacksAvailable}\n**Estimated Fame (50% W/L)**: ~${fameEstimation50WinRate}\n**Estimated Fame (All losses)**: ~${fameEstimationLosses}\n\n**__Players__**\n`;
 
             for(const p of onlyPlayersWithAttacks){
                 desc += `• **${p.name}** (${p.attacksLeft})\n`;
             }
+        }
+        else{
+            desc = "All active players have completed war attacks!"
+            return message.channel.send(embed.setDescription(desc).setThumbnail());
         }
 
         message.channel.send(addLUFooter(embed.setTitle(`__Active Players (10 mins)__`).setDescription(desc)));

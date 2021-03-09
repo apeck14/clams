@@ -160,7 +160,7 @@ exports.updateWarMatches = async (members, collection, token, raceDay, startTime
     
         if(log){
             for(const m of log.data){
-                if(m.type !== "riverRacePvP" && m.type !== "boatBattle" && m.gameMode.name !== "CW_Duel_1v1") continue;
+                if(m.type !== "riverRacePvP" && (m.type !== "boatBattle" && m.boatBattleSide !== "attacker") && m.gameMode.name !== "CW_Duel_1v1") continue;
                 else if(!exports.isWithinWarDay(m.battleTime)) continue;
 
                 const matchExists = await collection.findOne({"tag": m.team[0].tag, "battleTime": m.battleTime});
@@ -176,7 +176,7 @@ exports.updateWarMatches = async (members, collection, token, raceDay, startTime
                     }
 
                     let type, win, crowns, enemyCrowns;
-                    const matches = m.team[0].cards.length / 8;
+                    let matches = m.team[0].cards.length / 8;
 
                     //set type
                     if(m.type === "riverRacePvP"){
@@ -196,6 +196,7 @@ exports.updateWarMatches = async (members, collection, token, raceDay, startTime
                         crowns = m.team[0].crowns;
                         enemyCrowns = null;
                         win = m.boatBattleWon;
+                        matches = 1;
                     }
 
                     //set raceDay
@@ -215,6 +216,8 @@ exports.updateWarMatches = async (members, collection, token, raceDay, startTime
                         matchCount: matches,
                         raceDay: raceDay
                     };
+
+                    console.log(match);
                 
                     collection.insertOne(match);
                 }
@@ -269,8 +272,6 @@ exports.createLBEmbed = async (members, mdbClient) => {
         }
         return b.percent - a.percent;
     });
-
-    let wpLength = winPercentages.length;
 
     //add top 10
     for(let i = 0; i < 10; i++){
