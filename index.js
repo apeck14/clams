@@ -1,5 +1,5 @@
 const { prefix } = require('./config');
-const { clan, getMembers, setLastUpdated, clanLogChannelID, missedAttacksChannelID, isFinalWeek, isRaceDay, sortArrByDate, hex, getMinsDiff, updateWarMatches, createAttacksEmbed } = require('./util');
+const { clan, getMembers, setLastUpdated, clanLogChannelID, missedAttacksChannelID, isFinalWeek, isRaceDay, sortArrByDate, hex, getMinsDiff, updateWarMatches, createAttacksEmbed, isGlitchTime } = require('./util');
 const { MessageEmbed, Client, Collection } = require('discord.js');
 const fs = require('fs');
 const axios = require('axios');
@@ -64,8 +64,8 @@ bot.once('ready', async () => {
                     await updateWarMatches(members, rrColletion, API_KEY.token(true), true);
                 }
             }
-            //non final week race days
-            else if(await isRaceDay(API_KEY.token())){
+            //non final week race days and not during the glitch
+            else if(!isGlitchTime() && await isRaceDay(API_KEY.token())){
                 console.log(`Updating matches... (Race Day)`);
 
                 //update matches

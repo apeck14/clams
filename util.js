@@ -104,6 +104,17 @@ exports.isFinalWeek = async token => {
     //if final week
     else return (res.data.items[0].sectionIndex === 2) ? true : false;
 };
+exports.isGlitchTime = () => {
+    const now = new Date();
+
+    //if monday
+    if(now.getUTCDay() === 1){
+        //if between 9:30 AM UTC and 9:59 AM UTC
+        if(now.getUTCHours() === 9 && now.getUTCMinutes() >= 30) return true;
+        else return false;
+    }
+    return false;
+};
 exports.getMinsDiff = (a, b) => {
     if(!b){
         if(typeof a === "string" && a.indexOf(".000Z") >= 0) a = parseDate(a);
