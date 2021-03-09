@@ -29,8 +29,6 @@ module.exports = {
             for(const m of matches[tag]){
                 if(isWithinWarDay(m.battleTime)){
                     count += m.matchCount;
-                    console.log(m);
-                    console.log(count)
                 }
             }
 
@@ -41,8 +39,6 @@ module.exports = {
                 lastSeen.find(p => p.tag === tag).attacksLeft = attacksLeft;
             }
         }
-
-        console.log(lastSeen)
 
         const onlyPlayersWithAttacks = lastSeen.filter(p => p.attacksLeft).sort((a, b) => {return b.attacksLeft - a.attacksLeft});
         const fameEstimation50WinRate = (Math.floor(attacksAvailable / 2) * lossFame) + (Math.ceil(attacksAvailable / 2) * winFame);
