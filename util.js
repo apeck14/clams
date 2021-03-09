@@ -385,7 +385,7 @@ exports.createAttacksEmbed = async (embed, members, mdbClient) => {
         if(membersMatches[mem.tag]){
             for(const m of membersMatches[mem.tag]) {
                 if(exports.isWithinWarDay(m.battleTime)){
-                    count += matchCount;
+                    count += m.matchCount;
                 }
             }
     
