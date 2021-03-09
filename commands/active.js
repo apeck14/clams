@@ -50,7 +50,7 @@ module.exports = {
 
     
         if(onlyPlayersWithAttacks.length > 0){
-            desc += `**Players w/ Attacks**: ${recentPlayersWithAttacks}\n**Attacks Available**: ${attacksAvailable}\n**Estimated Fame (50% W/L)**: ~${fameEstimation50WinRate}\n**Estimated Fame (All losses)**: ~${fameEstimationLosses}\n\n**__Players__**\n`;
+            desc += `**Players w/ Attacks**: ${recentPlayersWithAttacks}\n**Attacks Available**: ${attacksAvailable}\n**Fame (50% W/L)**: ~${fameEstimation50WinRate}\n**Fame (All losses)**: ~${fameEstimationLosses}\n\n**__Players__**\n`;
 
             for(const p of onlyPlayersWithAttacks){
                 desc += `• **${p.name}** (${p.attacksLeft})\n`;
