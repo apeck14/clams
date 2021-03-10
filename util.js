@@ -228,7 +228,7 @@ exports.updateWarMatches = async (members, collection, token, raceDay, startTime
 
 exports.createLBEmbed = async (members, mdbClient) => {
     const collection = mdbClient.db("Clan").collection("Matches");
-    let embed = new MessageEmbed().setTitle('__Clams War Leaderboard__').setThumbnail(exports.clan.logo).setColor(exports.hex).setFooter(`Last Updated: ${exports.getMinsDiff(exports.lastUpdated)} min(s) ago | ?FAQ`);
+    let embed = exports.addLUFooter(new MessageEmbed().setTitle('__Clams War Leaderboard__').setThumbnail(exports.clan.logo).setColor(exports.hex));
     let winPercentages = [];
     let top10 = "";
     let clanWins = 0;
