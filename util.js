@@ -216,8 +216,6 @@ exports.updateWarMatches = async (members, collection, token, raceDay, startTime
                         matchCount: matches,
                         raceDay: raceDay
                     };
-
-                    console.log(match);
                 
                     collection.insertOne(match);
                 }
