@@ -255,7 +255,7 @@ exports.createLBEmbed = async (members, mdbClient) => {
             }
         }
 
-        if(wins + losses >= 4){
+        if(wins + losses >= 5){
             winPercentages.push({"name": name, "percent": ((wins / (wins+losses)) * 100).toFixed(0), "wins": wins, "losses": losses});
             clanWins += wins;
             clanLosses += losses;
