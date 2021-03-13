@@ -397,7 +397,7 @@ exports.createAttacksEmbed = async (embed, members, mdbClient) => {
         else newPlayers += `\n• **${mem.name}**`; //if new member (no matches logged yet)
     }
 
-    if(unusedAtks.length === 0) return embed.setDescription(`All attacks have been used!`).setThumbnail();
+    if(unusedAtks.length === 0) return embed.setDescription(`✅ All attacks have been used!`).setThumbnail();
     
     //sort unusedAtks alphabetically
     unusedAtks.sort((a, b) => {
