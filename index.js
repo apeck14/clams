@@ -119,8 +119,8 @@ bot.once('ready', async () => {
         }
     }, interval);
     
-    //send embed for who missed attacks every Tuesday at 3:59 am
-    let missedAttacksMonJob = new CronJob('0 59 3 * * 2', async () => {
+    //send embed for who missed attacks every Tuesday at 4:59 am
+    let missedAttacksMonJob = new CronJob('0 59 4 * * 2', async () => {
         let embed = new MessageEmbed().setColor(hex).setThumbnail(clan.logo);
         embed = await createAttacksEmbed(embed, await getMembers(clan.tag, API_KEY.token()), mdbClient);
 
@@ -128,7 +128,7 @@ bot.once('ready', async () => {
     }, null, true, 'America/Chicago');
 
     //send embed for who missed attacks every day (besides Monday and Tuesday) if final week
-    let finalWeekMissedAttacksJob = new CronJob('0 59 3 * * 0,3-6', async () => {
+    let finalWeekMissedAttacksJob = new CronJob('0 59 4 * * 0,3-6', async () => {
         if(await isFinalWeek(API_KEY.token())){
             let embed = new MessageEmbed().setColor(hex).setThumbnail(clan.logo);
             embed = await createAttacksEmbed(embed, await getMembers(clan.tag, API_KEY.token()), mdbClient);
@@ -137,8 +137,8 @@ bot.once('ready', async () => {
         }
     }, null, true, 'America/Chicago');
 
-    //send embeds for who missed attacks on Monday (week ends at ~3:43 AM CT)
-    let finalWeekLastDayMissedAttacksJob = new CronJob('0 35 3 * * 1', async () => {
+    //send embeds for who missed attacks on Monday (week ends at ~4:43 AM CT)
+    let finalWeekLastDayMissedAttacksJob = new CronJob('0 35 4 * * 1', async () => {
         if(await isFinalWeek(API_KEY.token())){
             let embed = new MessageEmbed().setColor(hex).setThumbnail(clan.logo);
             embed = await createAttacksEmbed(embed, await getMembers(clan.tag, API_KEY.token()), mdbClient);
@@ -147,8 +147,8 @@ bot.once('ready', async () => {
         }
     }, null, true, 'America/Chicago');
 
-    //delete all non-race matches and opponent matches every Monday at 4:00am CT
-    let deleteJob = new CronJob('0 0 4 * * 1', async () => {
+    //delete all non-race matches and opponent matches every Monday at 5:00am CT
+    let deleteJob = new CronJob('0 0 5 * * 1', async () => {
         const collection = mdbClient.db("Clan").collection("Matches");
         const oppCollection = mdbClient.db("Clan").collection("Opp Matches");
 
