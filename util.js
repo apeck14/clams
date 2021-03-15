@@ -371,7 +371,10 @@ exports.createAttacksEmbed = async (embed, members, mdbClient) => {
     let oneAttack = "";
     let newPlayers = "";
     let totalAttacksLeft = 0;
+    let totalWins = 0;
+    let totalCounted = 0;
     let desc = "";
+    let winPerc;
     
     const results = await collection.find({"tag": {$in: members.map(mem => mem.tag)}}).toArray();
     const membersMatches = groupBy(results, mem => mem.tag);
@@ -385,6 +388,20 @@ exports.createAttacksEmbed = async (embed, members, mdbClient) => {
             for(const m of membersMatches[mem.tag]) {
                 if(exports.isWithinWarDay(m.battleTime)){
                     count += m.matchCount;
+
+                    if(m.won !== "N/A" && m.type !== "Boat Battle"){
+                        totalCounted += m.matchCount;
+                        
+                        if(m.type === "Duel"){
+                            if(m.won) totalWins += 2;
+                            else{
+                                if(m.matchCount === 3) totalWins++;
+                            }
+                        }
+                        else{
+                            if(m.won) totalWins++;
+                        }
+                    }
                 }
             }
     
@@ -430,7 +447,10 @@ exports.createAttacksEmbed = async (embed, members, mdbClient) => {
     //add last updated footer
     embed = exports.addLUFooter(embed);
 
-    return embed.setTitle(`__Remaining War Attacks__`).setDescription(`Total Attacks Left: **${totalAttacksLeft}**\nTotal Members: **${unusedAtks.length}**${desc}`);
+    if(totalCounted <= 0) winPerc = `0%`;
+    else winPerc = `${(totalWins/totalCounted * 100).toFixed(1)}%`;
+
+    return embed.setTitle(`__Remaining War Attacks__`).setDescription(`Attacks Left: **${totalAttacksLeft}**\nMembers: **${unusedAtks.length}**\nToday's Win %: **${winPerc}**${desc}`);
 
 };
 exports.addLUFooter = embed => {
