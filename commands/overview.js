@@ -54,7 +54,7 @@ module.exports = {
         });
 
         ratings.sort((a, b) => {
-            if(b.rating === a.rating) return a["Tournaments (30%)"] - b["Tournaments (30%)"];
+            if(b.rating === a.rating) return a["Achievements (+)"] - b["Achievements (+)"];
             return a.rating - b.rating;
         });
 
