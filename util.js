@@ -389,7 +389,11 @@ exports.createAttacksEmbed = async (embed, members, mdbClient) => {
                 if(exports.isWithinWarDay(m.battleTime)){
                     count += m.matchCount;
 
-                    if(m.won !== "N/A" && m.type !== "Boat Battle"){
+                    if(m.won === "N/A"){
+                        totalCounted += 2;
+                        totalWins++;
+                    }
+                    else if(m.type !== "Boat Battle"){
                         totalCounted += m.matchCount;
                         
                         if(m.type === "Duel"){
@@ -447,10 +451,10 @@ exports.createAttacksEmbed = async (embed, members, mdbClient) => {
     //add last updated footer
     embed = exports.addLUFooter(embed);
 
-    if(totalCounted <= 0) winPerc = `0-0 (0%)`;
-    else winPerc = `${totalWins}-${totalCounted - totalWins} (${(totalWins/totalCounted * 100).toFixed(1)}%)`;
+    if(totalCounted <= 0) winPerc = `0%`;
+    else winPerc = `${(totalWins/totalCounted * 100).toFixed(1)}%`;
 
-    return embed.setTitle(`__Remaining War Attacks__`).setDescription(`Attacks Left: **${totalAttacksLeft}**\nMembers: **${unusedAtks.length}**\nToday's Stats: **${winPerc}**${desc}`);
+    return embed.setTitle(`__Remaining War Attacks__`).setDescription(`Attacks Left: **${totalAttacksLeft}**\nMembers: **${unusedAtks.length}**\nWin %: **${winPerc}**${desc}`);
 
 };
 exports.addLUFooter = embed => {
