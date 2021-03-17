@@ -27,34 +27,9 @@ module.exports = {
         };
         //check if match is between 9:30 AM UTC and 10:30 AM UTC
         const isMorningMatch = date => {
-            if(date.getUTCHours() === 9 || date.getUTCHours() === 10) return true;
+            if((date.getUTCHours() === 9 || date.getUTCHours() === 10) && (date.getUTCDay() === 1 || date.getUTCDay() === 2)) return true;
             return false;
         };
-        const mostRecentTenOClock = date => {
-            if (date.getUTCHours() < 10) {
-                date.setUTCDate(date.getUTCDate() - 1);
-            }
-            date.setUTCHours(10, 0, 0, 0);
-            return date;
-        };
-        const getMinsDiff = (a, b) => {
-            if(!b){
-                if(typeof a === "string" && a.indexOf(".000Z") >= 0) a = parseDate(a);
-                const diff = Math.abs(new Date() - a);
-                const mins = Math.ceil((diff/1000)/60);
-                return mins;
-            }
-            else{
-                let start = parseDate(a);
-                let finish = parseDate(b);
-        
-                const diff = Math.abs(start - finish);
-                const mins = Math.floor((diff/1000)/60);
-                return mins;
-            }
-        };
-
-        
 
         const collection = mdbClient.db("Clan").collection("Matches");
         const members = await getMembers(clan.tag, API_KEY.token());
@@ -74,28 +49,13 @@ module.exports = {
             if(!count) nonGrinders.push(name);
         }
 
-        let finalArr = [];
+        console.table(nonGrinders)
 
-        //find avg time it takes to complete matches
         for(let p of nonGrinders){
-            const results = await collection.find({name: p, raceDay: true}).toArray();
-            let minutes = 0;
-
-            for(const m of results) minutes += getMinsDiff(m.battleTime, mostRecentTenOClock(parseDate(m.battleTime)));
-
-            minutes = Math.round(minutes / results.length);
-            if(isNaN(minutes)) continue;
-
-            finalArr.push({name: p, time: minutes});
-
-        }
-        finalArr.sort((a,b) => {return b.time - a.time});
-
-        for(let p of finalArr){
-            desc += `• **${p.name}** (${Math.floor(p.time/60)}h${p.time%60}m)\n`;
+            desc += `• **${p}**\n`;
         }
 
-        message.channel.send(embed.setThumbnail('https://i.imgur.com/juC5MIt.jpg').setTitle(`__Rowdy's Naughty List__`).setDescription(desc).setFooter(`All players with no AM matches. Average time to complete war matches on race days shown.`))
+        message.channel.send(embed.setThumbnail('https://i.imgur.com/juC5MIt.jpg').setTitle(`__Rowdy's Naughty List__`).setDescription(desc).setFooter(`All players with no AM matches on Monday or Tuesday. (1 hour before reset - 1 hour after reset)`))
 
         
     },
