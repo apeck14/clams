@@ -4,7 +4,7 @@ const { groupBy } = require("lodash");
 
 module.exports = {
     name: 'naughty',
-    description: 'Get overview of OL1 or OL2',
+    description: 'clams naughty list',
     async execute(message, arg, mdbClient, API_KEY) {
         const embed = new MessageEmbed().setColor(hex);
 
@@ -25,15 +25,17 @@ module.exports = {
                 console.log(`Error (parseDate): ${date}`);
             }
         };
-        //check if match is between 9:30 AM UTC and 10:30 AM UTC
         const isMorningMatch = date => {
-            if((date.getUTCHours() === 9 || date.getUTCHours() === 10) && (date.getUTCDay() === 1 || date.getUTCDay() === 2)) return true;
+            //glitch (Monday 9:30 AM UTC - 10:30 AM UTC)
+            if(date.getUTCDay() === 1 && ((date.getUTCHours() === 9 && date.getUTCMinutes() >= 30) || (date.getUTCHours() === 10 && date.getUTCMinutes() <= 30))) return true;
+            //before race on Tuesday (10 AM UTC - 11 AM UTC)
+            else if(date.getUTCDay() === 2 && date.getUTCHours() === 10) return true;
             return false;
         };
 
         const collection = mdbClient.db("Clan").collection("Matches");
         const members = await getMembers(clan.tag, API_KEY.token());
-        const results = await collection.find({ tag: { $in:  members.map(m => m.tag) }}).toArray();
+        const results = await collection.find({ tag: { $in:  members.map(m => m.tag) }, raceDay: true}).toArray();
         const matches = groupBy(results, m => m.tag);
         let nonGrinders = [];
         let desc = "";
@@ -53,8 +55,7 @@ module.exports = {
             desc += `• **${p}**\n`;
         }
 
-        message.channel.send(embed.setThumbnail('https://i.imgur.com/juC5MIt.jpg').setTitle(`__Rowdy's Naughty List__`).setDescription(desc).setFooter(`All players with no AM matches on Monday or Tuesday. (1 hour before reset - 1 hour after reset)`))
+        message.channel.send(embed.setThumbnail('https://i.imgur.com/juC5MIt.jpg').setTitle(`__Rowdy's Naughty List__`).setDescription(desc).setFooter(`All players with no AM matches on Monday or Tuesday. (Mon.: glitch, Tues.: Before finish line)`));
 
-        
     },
 };
