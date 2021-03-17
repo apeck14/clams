@@ -55,7 +55,7 @@ module.exports = {
             desc += `• **${p}**\n`;
         }
 
-        message.channel.send(embed.setThumbnail('https://i.imgur.com/juC5MIt.jpg').setTitle(`__Rowdy's Naughty List__`).setDescription(desc).setFooter(`All players with no AM matches on Monday or Tuesday. (Mon.: glitch, Tues.: Before finish line)`));
+        message.channel.send(embed.setThumbnail('https://i.imgur.com/juC5MIt.jpg').setTitle(`__Rowdy's Naughty List__`).setDescription(`Total Members: **${nonGrinders.length}**\n\n` + desc).setFooter(`All players with no AM matches on Monday or Tuesday. (Mon.: glitch, Tues.: Within an hour)`));
 
     },
 };
