@@ -51,6 +51,8 @@ module.exports = {
             if(!count) nonGrinders.push(name);
         }
 
+        nonGrinders.sort();
+
         for(let p of nonGrinders){
             desc += `• **${p}**\n`;
         }
