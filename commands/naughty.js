@@ -27,7 +27,7 @@ module.exports = {
         };
         //check if match is between 9:30 AM UTC and 10:30 AM UTC
         const isMorningMatch = date => {
-            if(date.getUTCHours() === 9 || date.getUTCHours() === 10 || (date.getUTCHours() === 11 && date.getUTCMinutes() <= 45)) return true;
+            if(date.getUTCHours() === 9 || date.getUTCHours() === 10) return true;
             return false;
         };
         const mostRecentTenOClock = date => {
