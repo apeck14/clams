@@ -95,7 +95,7 @@ module.exports = {
             desc += `• **${p.name}** (${Math.floor(p.time/60)}h${p.time%60}m)\n`;
         }
 
-        message.channel.send(embed.setTitle(`__Rowdy's Naughty List__`).setDescription(desc).setFooter(`All players with no AM matches. Average time to complete war matches on race days shown.`))
+        message.channel.send(embed.setThumbnail('https://i.imgur.com/juC5MIt.jpg').setTitle(`__Rowdy's Naughty List__`).setDescription(desc).setFooter(`All players with no AM matches. Average time to complete war matches on race days shown.`))
 
         
     },
