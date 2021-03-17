@@ -49,8 +49,6 @@ module.exports = {
             if(!count) nonGrinders.push(name);
         }
 
-        console.table(nonGrinders)
-
         for(let p of nonGrinders){
             desc += `• **${p}**\n`;
         }
