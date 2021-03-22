@@ -454,7 +454,7 @@ exports.createAttacksEmbed = async (embed, members, mdbClient) => {
     if(totalCounted <= 0) winPerc = `0%`;
     else winPerc = `${(totalWins/totalCounted * 100).toFixed(1)}%`;
 
-    return embed.setTitle(`__Remaining War Attacks__`).setDescription(`Attacks Left: **${totalAttacksLeft}**\nMembers: **${unusedAtks.length}**\nWin %: **${winPerc}**${desc}`);
+    return embed.setTitle(`__Remaining War Attacks__`).setDescription(`Attacks Left: **${totalAttacksLeft}**\nMembers: **${unusedAtks.length}**\nToday's Win %: **${winPerc}**${desc}`);
 
 };
 exports.addLUFooter = embed => {
