@@ -1,5 +1,5 @@
 const { MessageEmbed } = require('discord.js');
-const { hex, getMembers, clan, privateChannelID } = require('../util.js');
+const { hex, getMembers, clan, privateChannelID, isFinalWeek } = require('../util.js');
 const { groupBy } = require("lodash");
 const { time } = require('cron');
 
@@ -29,8 +29,13 @@ module.exports = {
         const isMorningMatch = date => {
             //glitch (Monday 9:30 AM UTC - 10:30 AM UTC)
             if(date.getUTCDay() === 1 && ((date.getUTCHours() === 9 && date.getUTCMinutes() >= 30) || (date.getUTCHours() === 10 && date.getUTCMinutes() <= 30))) return true;
+            else if(date.getUTCDay() === 2 && (date.getUTCHours() === 10) || (date.getUTCHours() === 11 && date.getUTCMinutes() <= 45)) return true;
             return false;
         };
+
+        const d = parseDate('20210302T113107.000Z');
+        console.log(d.getUTCHours());
+        console.log(d.getUTCDay());
 
         const collection = mdbClient.db("Clan").collection("Matches");
         const members = await getMembers(clan.tag, API_KEY.token());
@@ -46,9 +51,7 @@ module.exports = {
                 name = m.name;
                 timeStamp = parseDate(m.battleTime);
 
-                //tuesday match before race ends
-                if(timeStamp.getUTCDay() === 2 && m.raceDay === true) count++;
-                else if(isMorningMatch(timeStamp)) count++;
+                if(isMorningMatch(timeStamp)) count++;
             }
 
             if(!count) nonGrinders.push(name);
@@ -60,7 +63,7 @@ module.exports = {
             desc += `• **${p}**\n`;
         }
 
-        message.channel.send(embed.setThumbnail('https://i.imgur.com/juC5MIt.jpg').setTitle(`__Rowdy's Naughty List__`).setDescription(`Total Members: **${nonGrinders.length}**\n\n` + desc).setFooter(`All players with no AM matches on Monday or Tuesday. (Mon.: glitch, Tues.: Before race ends)`));
+        message.channel.send(embed.setThumbnail('https://i.imgur.com/juC5MIt.jpg').setTitle(`__Rowdy's Naughty List__`).setDescription(`Total Members: **${nonGrinders.length}**\n\n` + desc).setFooter(`All players with no AM matches on Monday or Tuesday. (Mon.: glitch, Tues.: Within 1h45m of reset)`));
 
     },
 };
