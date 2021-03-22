@@ -33,6 +33,7 @@ module.exports = {
             const tag = player.data.tag;
             const pb = player.data.bestTrophies;
             const cards = player.data.cards;
+            const warWins = player.data.warDayWins;
             const maxWins = player.data.challengeMaxWins;
             const classicChallBadge = player.data.badges.filter(b => b.name === "Classic12Wins");
             const grandChallBadge = player.data.badges.filter(b => b.name === "Grand12Wins");
@@ -50,7 +51,7 @@ module.exports = {
                 else if(diff === 2) cards11++;
             }
 
-            desc += `**Name**: ${name}\n**Tag**: ${tag}\n**Player Rating**: ${ratingObj.rating}\n**Avg. Clams Rating**: ${Math.round(clanRating)}\n\n**__Cards__**\n**Lvl. 13**: ${cards13}\n**Lvl. 12**: ${cards12}\n**Lvl. 11**: ${cards11}\n\n**__Stats__**\n**PB**: ${pb}\n**Most Chall. Wins**: ${maxWins}\n**Classic Chall. Wins**: ${classicChallWins}\n**Grand Chall. Wins**: ${grandChallWins}\n\n[RoyaleAPI Profile](https://royaleapi.com/player/${tag.substr(1)})`;
+            desc += `**Name**: ${name}\n**Tag**: ${tag}\n**Player Rating**: ${ratingObj.rating}\n**Avg. Clams Rating**: ${Math.round(clanRating)}\n\n**__Cards__**\n**Lvl. 13**: ${cards13}\n**Lvl. 12**: ${cards12}\n**Lvl. 11**: ${cards11}\n\n**__Stats__**\n**War Wins**: ${warWins}\n**PB**: ${pb}\n**Most Chall. Wins**: ${maxWins}\n**Classic Chall. Wins**: ${classicChallWins}\n**Grand Chall. Wins**: ${grandChallWins}\n\n[RoyaleAPI Profile](https://royaleapi.com/player/${tag.substr(1)})`;
 
             message.channel.send(embed.setDescription(`✅ Request sent for **${player.data.name}**! A Co-Leader will DM you shortly.`));
             bot.channels.cache.get(applyLogChannelID).send(logEmbed.setDescription(desc));
