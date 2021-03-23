@@ -102,7 +102,7 @@ exports.isFinalWeek = async token => {
         return false;
     }
     //if final week
-    else return (res.data.items[0].sectionIndex === 2) ? true : false;
+    else return res.data.items[0].sectionIndex === 3;
 };
 exports.isGlitchTime = () => {
     const now = new Date();
