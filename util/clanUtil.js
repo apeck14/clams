@@ -228,6 +228,198 @@ const clanUtil = {
             console.error(e);
             return [];
         }
+    },
+    getPlayerData: async tag => {
+        try{
+            tag = tag[0] === "#" ? tag.substr(1) : tag;
+            const player = await request(`https://proxy.royaleapi.dev/v1/players/%23${tag}`);
+
+            const classicChallBadge = player.badges.filter(b => b.name === "Classic12Wins");
+            const grandChallBadge = player.badges.filter(b => b.name === "Grand12Wins");
+            const classicChallWins = classicChallBadge.length === 1 ? classicChallBadge[0].progress : 0;
+            const grandChallWins = grandChallBadge.length === 1 ? grandChallBadge[0].progress : 0;
+
+            return {
+                name: player.name,
+                tag: player.tag,
+                clan: player.clan ? player.clan.name : 'None',
+                level: player.expLevel,
+                rating: await clanUtil.playerRating([tag]),
+                pb: player.bestTrophies,
+                cards: player.cards,
+                warWins: player.warDayWins,
+                mostChallWins: player.challengeMaxWins,
+                challWins: classicChallWins,
+                grandChallWins: grandChallWins
+            }
+
+        } catch (e) {
+            console.log(e);
+            return false;
+        }
+    },
+    playerRating: async tags => {
+        if(!Array.isArray(tags)) return;
+
+        const cardWeight = 0.3;
+        const trophyWeight = 0.45;
+        const challWeight = 0.25;
+
+        const cardRating = player => {
+            //sort cards by lvl
+            const cards = player.cards.sort((a,b) => {
+                const aDiff = a.maxLevel - a.level;
+                const bDiff = b.maxLevel - b.level;
+    
+                return aDiff - bDiff;
+            });
+    
+            const iterations = cards.length < 102 ? cards.length : 102;
+            let rating = 0;
+    
+            for(let i = 0; i < iterations; i++){
+                const diff = cards[i].maxLevel - cards[i].level;
+                if(diff === 0) rating += 1;
+                else if(diff === 1) rating += 0.5;
+                else if(diff === 2) rating += 0.2;
+                else if(diff === 3) rating += 0.08;
+            }            
+    
+            rating = rating / iterations * 100;
+
+            return rating > 99 ? 99 : rating;
+        };
+        const trophyRating = player => {
+            const bestTrophies = player.bestTrophies;
+    
+            if(bestTrophies < 4000) return 0;
+            else if(bestTrophies < 4500) return 10;
+            else if(bestTrophies < 5000) return 25;
+            else if(bestTrophies <= 5100) return 35;
+            else if(bestTrophies <= 5200) return 40;
+            else if(bestTrophies <= 5300) return 45;
+            else if(bestTrophies <= 5400) return 50;
+            else if(bestTrophies <= 5500) return 55;
+            else if(bestTrophies <= 5600) return 60;
+            else if(bestTrophies <= 5700) return 63;
+            else if(bestTrophies <= 5800) return 65;
+    
+            else if(bestTrophies <= 5820) return 66;
+            else if(bestTrophies <= 5840) return 67;
+            else if(bestTrophies <= 5860) return 68;
+            else if(bestTrophies <= 5880) return 69;
+            else if(bestTrophies <= 5900) return 70;
+    
+            else if(bestTrophies <= 5920) return 71;
+            else if(bestTrophies <= 5940) return 72;
+            else if(bestTrophies <= 5960) return 73;
+            else if(bestTrophies <= 5980) return 74;
+            else if(bestTrophies <= 6000) return 75;
+    
+            else if(bestTrophies <= 6033) return 76;
+            else if(bestTrophies <= 6066) return 77;
+            else if(bestTrophies <= 6100) return 78;
+    
+            else if(bestTrophies <= 6133) return 79;
+            else if(bestTrophies <= 6166) return 80;
+            else if(bestTrophies <= 6200) return 81;
+    
+            else if(bestTrophies <= 6225) return 82;
+            else if(bestTrophies <= 6250) return 83;
+            else if(bestTrophies <= 6275) return 84;
+            else if(bestTrophies <= 6300) return 85;
+    
+            else if(bestTrophies <= 6350) return 86;
+            else if(bestTrophies <= 6400) return 87;
+    
+            else if(bestTrophies <= 6450) return 88;
+            else if(bestTrophies <= 6500) return 89;
+    
+            else if(bestTrophies <= 6550) return 90;
+            else if(bestTrophies <= 6600) return 91;
+    
+            else if(bestTrophies <= 6650) return 92;
+            else if(bestTrophies <= 6700) return 93;
+    
+            else if(bestTrophies <= 6750) return 94;
+            else if(bestTrophies <= 6800) return 95;
+    
+            else if(bestTrophies <= 6850) return 96;
+            else if(bestTrophies <= 6900) return 97;
+    
+            else if(bestTrophies < 7000) return 98;
+    
+            else return 99;
+        };
+        const challRating = player => {
+            const maxWins = player.challengeMaxWins;
+            if(maxWins === 0) return 0;
+            
+            let rating = 0;
+
+            for(let i = 1; i < maxWins + 1; i++){
+                if(i < 6) rating += 5;
+                else if(i < 10) rating += 7;
+                else if(i < 13) rating += 10;
+                else if(i < 17) rating += 3;
+                else if(i === 17) rating += 2;
+                else rating++;
+            }
+    
+            return rating - 1;
+        };
+        const achievements = player => {
+            const warWins = player.warDayWins;
+            const badges = player.badges;
+            let rating = 0;
+    
+            //war wins
+            if(warWins <= 25) rating -= 5;
+            else if(warWins <= 50) rating -= 3;
+            else if(warWins >= 300) rating += 5;
+            else if(warWins >= 250) rating += 3;
+            else if(warWins >= 200) rating += 1;
+    
+            //badges
+            for(const b of badges){
+                if(b.name === "Classic12Wins"){ // Classic Chall
+                    if(b.progress >= 100) rating += 20;
+                    else if(b.progress >= 50) rating += 10;
+                    else if(b.progress >= 10) rating += 5;
+                    else if(b.progress >= 5) rating += 3;
+                    else if(b.progress === 1) rating += 2;
+                }
+                else if(b.name === "Grand12Wins"){ // Grand Chall
+                    if(b.progress >= 100) rating += 100;
+                    else if(b.progress >= 50) rating += 50;
+                    else if(b.progress >= 10) rating += 25;
+                    else if(b.progress >= 5) rating += 15;
+                    else if(b.progress === 1) rating += 7;
+                }
+                else if(b.name.indexOf("Crl") !== -1){ //CRL
+                    if(b.progress === 20) rating += 10;
+                    else if(b.progress >= 18) rating += 7;
+                    else rating += 6;
+                }
+                else if(b.name.indexOf("Ladder") !== -1){ //Tournaments and Ladder Finishes
+                    if(b.progress <= 10) rating += 25;
+                    else if(b.progress <= 100) rating += 15;
+                    else if(b.progress <= 500) rating += 7;
+                    else rating += 5;
+                }
+            }
+    
+            return rating;
+        };
+
+        const playerPromises = tags.map(p => request(`https://proxy.royaleapi.dev/v1/players/%23${p[0] === '#' ? p.substr(1) : p}`));
+        const players = await Promise.all(playerPromises);
+        let ratings = players.map(p => (cardRating(p) * cardWeight) + (trophyRating(p) * trophyWeight) + (challRating(p) * challWeight) + achievements(p));
+        ratings = ratings.map(p => p > 99 ? 99 : p);
+
+        ratings.sort();
+
+        return ratings.length === 1 ? ratings[0] : ratings;
     }
 }
 
