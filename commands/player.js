@@ -5,6 +5,7 @@ module.exports = {
     name: 'player',
     execute: async (message, arg) => {
         if(!arg) return message.channel.send(new MessageEmbed().setColor(hex).setDescription("No player tag given! (Ex: **?player #ABC123**)"));
+        arg = arg[0] === "#" ? arg.substr(1) : arg;
 
         const player = await getPlayerData(arg);
         if(!player) return message.channel.send(new MessageEmbed().setDescription("Invalid tag, or unexpected error. Try again.").setColor(hex));
@@ -16,8 +17,7 @@ module.exports = {
 
             const top = `Clan: **${player.clan}**\n\n**Lvl.**: ${player.level}\n**Player Rating**: ${player.rating.toFixed(0)}\n\n`;
             const mid = `**__Stats__**\n**PB**: ${player.pb}\n**War Wins**: ${player.warWins}\n**Most Chall. Wins**: ${player.mostChallWins}\n**Classic Chall. Wins**: ${player.challWins}\n**Grand Chall. Wins**: ${player.grandChallWins}\n\n`;
-            const bottom = `**__Cards__**\n**Lvl. 13**: ${lvl13Cards}\n**Lvl. 12**: ${lvl12Cards}\n**Lvl. 11**: ${lvl11Cards}`;
-
+            const bottom = `**__Cards__**\n**Lvl. 13**: ${lvl13Cards}\n**Lvl. 12**: ${lvl12Cards}\n**Lvl. 11**: ${lvl11Cards}\n\n[RoyaleAPI Profile](https://royaleapi.com/player/${arg})`;
             return top + mid + bottom;
         }
 
