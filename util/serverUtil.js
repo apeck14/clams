@@ -20,6 +20,7 @@ const serverUtil = {
         const winPerc = (attacksLeftObj.totalWins / (attacksLeftObj.totalWins + attacksLeftObj.totalLosses)) * 100;
         const attacksLeft = remainingAttacks.reduce((a, b) => a + b.attacksLeft, 0);
         const membersLeft = remainingAttacks.filter(m => m.attacksLeft > 0).length;
+        const noMatches = attacksLeftObj.totalWins + attacksLeftObj.totalLosses === 0;
 
         //sort alphabetically
         attacksLeftObj.remainingAttacks.sort((a, b) => a.name.localeCompare(b.name));
@@ -32,7 +33,7 @@ const serverUtil = {
         const desc = () => {
             if(!attacksLeft) return `Today's Win %: **__${winPerc.toFixed(1)}%__**\n\n***No Attacks Remaining***`;
 
-            let desc = `Attacks Left: **${attacksLeft}**\nMembers: **${membersLeft}**\nToday's Win %: **${winPerc.toFixed(1)}%**\n\n`;
+            let desc = `Attacks Left: **${attacksLeft}**\nMembers: **${membersLeft}**\nToday's Win %: **${noMatches ? '0.0' : winPerc.toFixed(1)}%**\n\n`;
             if(fourAttacksLeft) desc += `**__4 Attacks Left__**${fourAttacksLeft}\n\n`;
             if(threeAttacksLeft) desc += `**__3 Attacks Left__**${threeAttacksLeft}\n\n`;
             if(twoAttacksLeft) desc += `**__2 Attacks Left__**${twoAttacksLeft}\n\n`;
