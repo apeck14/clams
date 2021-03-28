@@ -175,12 +175,12 @@ const clanUtil = {
 
                 const player = attacksUsed.remainingAttacks.find(p => p.tag === m.tag);
 
-                if(m.type === 'Boat Battle') player.attacksLeft -= 1;
-                else if(m.type === 'War'){
+                if(m.type === 'boat') player.attacksLeft -= 1;
+                else if(m.type === 'battle'){
                     player.attacksLeft -= 1;
                     (m.won) ? attacksUsed.totalWins++ : attacksUsed.totalLosses++;
                 }
-                else if(m.type === 'Duel'){
+                else if(m.type === 'duel'){
                     player.attacksLeft -= m.matchCount;
 
                     if(m.matchCount === 2) (m.won) ? attacksUsed.totalWins += 2 : attacksUsed.totalLosses += 2;
