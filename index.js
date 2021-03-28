@@ -20,7 +20,7 @@ for(const file of commandFiles){
 
 // ----------------------- JOBS --------------------------------------
 //send embed for who missed attacks everyday at 4:59 am
-const missedAttacksJob = new CronJob('0 34 5 * * *', async () => {
+const missedAttacksJob = new CronJob('0 59 4 * * *', async () => {
     const members = await getMembers();
     await updateWarMatches(members);
 
