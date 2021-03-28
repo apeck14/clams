@@ -1,69 +1,65 @@
-const { MessageEmbed } = require('discord.js');
-const { hex, designatedChannelID, clan, createAttacksEmbed, getMembers, isWithinWarDay, getMinsDiff, addLUFooter } = require('../util.js');
-const { groupBy } = require('lodash');
+const { createAttacksEmbed, LUFooter } = require("../util/serverUtil");
+const { getAttacksLeft, hex, logo } = require('../util/clanUtil');
+const mongoUtil = require("../util/mongoUtil");
+const { parseDate, getMinsDiff } = require("../util/otherUtil");
 
 module.exports = {
     name: 'attacks',
-    description: 'get list of players with unused attacks',
-    async execute (message, arg, mdbClient, API_KEY){
-        
-        let embed = new MessageEmbed().setColor(hex);
+    execute: async (message, arg) => {
+        if(arg.toUpperCase() === 'C'){
+            const db = await mongoUtil.db("Clan");
+            const collection = db.collection("Matches");
 
-        if(message.channel.id !== designatedChannelID) return message.channel.send(embed.setDescription(`Please use my commands in <#${designatedChannelID}>.`));
+            const attacksLeftObj = await getAttacksLeft();
+            const attacksCompleted = attacksLeftObj.remainingAttacks.filter(p => p.attacksLeft === 0);
+            const totalMembers = attacksCompleted.length;
 
+            for(const p of attacksCompleted){
+                const matches = await collection.find({tag: p.tag}).toArray();
 
-        //show completed matches, and time of last match
-        if(arg.toLowerCase() === 'c'){
-           const collection = mdbClient.db("Clan").collection("Matches");
-           let memberTags = await getMembers(clan.tag, API_KEY.token());
-           memberTags = memberTags.map(mem => mem.tag);
-           const results = await collection.find({"tag": {$in: memberTags}}).toArray();
-           const membersMatches = groupBy(results, mem => mem.tag);
-           let finishedMembers = [];
-           let desc = "";
+                if(matches.length === 0) continue; //continue if no matches for player in DB
 
-            //check if each members last 4 matches are within the war day
-           for(const mem in membersMatches){
-               const len = membersMatches[mem].length;
-               let attacksToday = 0;
+                let mostRecentMatch = new Date();
+                mostRecentMatch.setUTCDate(mostRecentMatch.getUTCDate() - 1000);
 
-                for(let i = len - 1; i >= 0; i--){
-                    if(isWithinWarDay(membersMatches[mem][i].battleTime)) attacksToday += membersMatches[mem][i].matchCount;
+                for(const m of matches){
+                    const date = parseDate(m.battleTime);
+                    if(date > mostRecentMatch) mostRecentMatch = date;
                 }
 
-               //if player completed all matches today
-               if(attacksToday >= 4){
-                   const name = membersMatches[mem][len - 1].name;
-                   const minsSinceLastMatch = getMinsDiff(membersMatches[mem][len - 1].battleTime);
-                   finishedMembers.push({name: name, mins: minsSinceLastMatch});
-               }
+                p.minsSinceLastAttack = getMinsDiff(mostRecentMatch);
+            }
 
-           }
+            //sort by mins since last attack in ascending order
+            attacksCompleted.sort((a, b) => {return a.minsSinceLastAttack - b.minsSinceLastAttack});
 
-           //sort finsihedMembers by time of most recent match
-           finishedMembers.sort((a, b) => {
-               return b.mins - a.mins;
-           })
+            const desc = () => {
+                if(!totalMembers) return 'No players have completed their attacks yet!'
 
-           for(const mem of finishedMembers){
-               let relativeTime = `${Math.floor(mem.mins / 60)}h ${mem.mins % 60}m`;
-               if(Math.floor(mem.mins / 60) === 0) relativeTime = relativeTime.substr(3);
+                const lessThan60MinsAgo = attacksCompleted.filter(m => m.minsSinceLastAttack < 60).map(m => `\n•⭐ **${m.name}** (${m.minsSinceLastAttack%60}m)`).join('');
+                const moreThan60MinsAgo = attacksCompleted.filter(m => m.minsSinceLastAttack >= 60).map(m => `\n•⭐ **${m.name}** (${Math.floor(m.minsSinceLastAttack/60)}h ${m.minsSinceLastAttack%60}m)`).join('');
+                let desc = `**Total Members**: ${totalMembers}\n`;
 
-               desc += `•⭐ **${mem.name}** (${relativeTime})\n`;
-           }
+                if(lessThan60MinsAgo.length > 0) desc += lessThan60MinsAgo;
+                if(moreThan60MinsAgo.length > 0) desc += moreThan60MinsAgo;
 
-           embed = embed.setTitle(`__Completed War Attacks__`).setDescription(`**Total Members**: ${finishedMembers.length}\n\n${desc}`);
+                return desc;
+            };
 
-           return message.channel.send(addLUFooter(embed));
+            const attacksEmbed = {
+                color: hex,
+                title: totalMembers ? '__Completed War Attacks__' : null,
+                thumbnail: {
+                    url: totalMembers ? logo : null
+                },
+                description: desc(),
+                footer: {
+                    text: LUFooter()
+                }
+            }
+
+            message.channel.send({ embed: attacksEmbed });
         }
-
-        message.channel.startTyping();
-
-        const members = await getMembers(clan.tag, API_KEY.token());
-        embed.setThumbnail(clan.logo);
-
-        message.channel.send(await createAttacksEmbed(embed, members, mdbClient));
-
-        message.channel.stopTyping();
+        else message.channel.send({ embed: await createAttacksEmbed() });
     }
-};
+}

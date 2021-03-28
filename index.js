@@ -1,14 +1,11 @@
-const { prefix } = require('./config');
-const { clan, getMembers, setLastUpdated, clanLogChannelID, missedAttacksChannelID, isFinalWeek, isRaceDay, sortArrByDate, hex, getMinsDiff, updateWarMatches, createAttacksEmbed, isGlitchTime } = require('./util');
 const { MessageEmbed, Client, Collection } = require('discord.js');
 const fs = require('fs');
-const axios = require('axios');
-const { MongoClient } = require('mongodb');
-const mdbClient = new MongoClient(process.env.uri, { useUnifiedTopology: true });
 const { CronJob } = require('cron');
-const { Token } = require('./token');
-
-const API_KEY = new Token();
+const mongoUtil = require('./util/mongoUtil');
+const { getMembers, tag, updateWarMatches, isColosseumWeek, isRaceDay, name, hex, logo } = require('./util/clanUtil');
+const { prefix } = require('./config.json');
+const { request, setLastUpdated, sortArrByDate, getMinsDiff, lastUpdated } = require('./util/otherUtil');
+const { clanLogChannelID } = require('./util/serverUtil');
 
 const bot = new Client();
 bot.commands = new Collection();
@@ -22,7 +19,6 @@ for(const file of commandFiles){
 
 // --------------------- MAIN ----------------------------------------
 
-
 bot.once('ready', async () => {
     console.log('Clams is online!');
 
@@ -32,139 +28,93 @@ bot.once('ready', async () => {
         }
     });
 
-    await mdbClient.connect();
-
     const mins = 5; //mins to update matches
     const interval = mins * 60 * 1000;
-    const collection = mdbClient.db("Clan").collection("Matches");
+    const db = await mongoUtil.db("Clan");
     
-    //update database with all new war matches
     setInterval(async () => {
-        const members = await getMembers(clan.tag, API_KEY.token());
-        setLastUpdated(new Date());
+        //colosseum week
+        if(await isColosseumWeek()){
+            console.log('Updating matches...(colosseum)');
 
-        const rr = await axios.get(`https://proxy.royaleapi.dev/v1/clans/%23${clan.tag}/currentriverrace`, { headers : { 'Authorization': 'Bearer ' + API_KEY.token() } }).catch(e => {console.log(e)});
+            const rr = await request(`https://proxy.royaleapi.dev/v1/clans/%23${tag}/currentriverrace`);
+            const clans = rr.clans.map(c => c.tag); //all river race clans
 
-        if(rr){
-            //final week
-            if(await isFinalWeek(API_KEY.token())){
-                const rrColletion = mdbClient.db("Clan").collection("Opp Matches");
-                const rrClans = rr.data.clans.map(c => c.tag).filter(t => t !== `#${clan.tag}`);
-
-                console.log(`Updating Matches... (Final Week)`);
-
-                //update matches
-                await updateWarMatches(members, collection, API_KEY.token(true), true);
-
-                console.log(`Updating opponents matches...`);
-
-                //update all opponents matches
-                for(const c of rrClans){
-                    const members = await getMembers(c, API_KEY.token());
-                    await updateWarMatches(members, rrColletion, API_KEY.token(true), true);
-                }
+            //update matches for all clans in river race
+            for(const c of clans){
+                const members = await getMembers(c);
+                await updateWarMatches(members, c);
             }
-            //non final week race days and not during the glitch
-            else if(!isGlitchTime() && await isRaceDay(API_KEY.token())){
-                console.log(`Updating matches... (Race Day)`);
+        }
+        //race day (non-colosseum)
+        else if(await isRaceDay()){
+            console.log("Updating matches...(race)");
 
-                //update matches
-                await updateWarMatches(members, collection, API_KEY.token(true), true);
-            }
-            else{
-                console.log(`Updating matches...`);
+            const members = await getMembers();
+            await updateWarMatches(members);
+        }
+        //non-race and non-colosseum
+        else{
+            console.log("Updating matches...");
 
-                const log = await axios.get(`https://proxy.royaleapi.dev/v1/clans/%23${clan.tag}/riverracelog`, { headers : { 'Authorization': 'Bearer ' + API_KEY.token() } }).catch(e => {console.log(e.response)});
+            const races = db.collection("Races");
+            const rr = await request(`https://proxy.royaleapi.dev/v1/clans/%23${tag}/currentriverrace`);
+            const log = await request(`https://proxy.royaleapi.dev/v1/clans/%23${tag}/riverracelog`);
+            const startTime = `${log.items[0].createdDate.substr(0,9)}100000.000Z`;
+            const finishTime = rr.clan.finishTime;
 
-                if(log){
-                    const races = mdbClient.db("Clan").collection("Races");
+            const finishedClans = rr.clans.filter(c => c.finishTime);
+            const place = sortArrByDate(finishedClans, 'finishTime').map(c => c.tag).indexOf("#"+tag) + 1;
 
-                    const finishTime = rr.data.clan.finishTime;
-                    const finishedClans = rr.data.clans.filter(c => c.finishTime);
-                    const place = sortArrByDate(finishedClans, 'finishTime').map(c => c.tag).indexOf("#"+clan.tag) + 1;
-                    const startTime = log.data.items[0].createdDate;
+            const race = {"clan": `${name}`, "place": place, "startTime": startTime, "finishTime": finishTime};
+            const raceExists = await races.findOne(race);
+
+            //if race not in DB
+            if(!raceExists){
+                console.log("------- NEW RACE ADDED -------");
+                console.dir(race);
+                console.log("------------------------------");
+
+                races.insertOne(race);
+
+                const desc = () => {
                     const diffMins = getMinsDiff(startTime, finishTime);
                     const timeToComplete = `${Math.floor(diffMins/60)}h ${diffMins % 60}m`;
-                    
-                    const lastRace = {"clan": `${clan.name}`, "place": place, "startTime": startTime, "finishTime": finishTime};
-                    const raceExists = await races.findOne(lastRace);
-    
-                    await updateWarMatches(members, collection, API_KEY.token(true), false, startTime, finishTime);
-    
-                    //if race not already in DB, then add it and send embed
-                    if(!raceExists){
-                        console.log("------- NEW RACE ADDED -------");
-                        console.dir(lastRace);
-                        console.log("------------------------------");
-    
-                        await races.insertOne(lastRace);
-    
-                        //send embed that race has finished with race details
-                        let embed = new MessageEmbed().setTitle(`Race Finished!`).setColor(hex).setThumbnail(clan.logo);
-                        let desc = "";
-    
-                        //add place to desc
-                        if(place === 1) desc += "Place: :first_place:\n";
-                        else if(place === 2) desc += "Place: :second_place:\n";
-                        else if(place === 3) desc += "Place: :third_place:\n";
-                        else desc += `Place: **${place}th**\n`;
-    
-                        //add time took to complete race
-                        desc += `Time: **${timeToComplete}**\n`;
-    
-                        bot.channels.cache.get(clanLogChannelID).send(embed.setDescription(desc));
-                    }
+                    let desc = "";
+
+                    //add place to desc
+                    if(place === 1) desc += "Place: :first_place:\n";
+                    else if(place === 2) desc += "Place: :second_place:\n";
+                    else if(place === 3) desc += "Place: :third_place:\n";
+                    else desc += `Place: **${place}th**\n`;
+
+                    //add time took to complete race
+                    desc += `Time: **${timeToComplete}**\n`;
+
+                    return desc;
+                };
+
+                const raceEmbed = {
+                    color: hex,
+                    title: 'Race Finished!',
+                    thumbnail: {
+                        url: logo
+                    },
+                    description: desc()
                 }
+
+                bot.channels.cache.get(clanLogChannelID).send({ embed: raceEmbed });
             }
+
+            await updateWarMatches(await getMembers());
         }
+
+        console.log(lastUpdated)
+        setLastUpdated();
+        console.log(lastUpdated)
     }, interval);
     
-    //send embed for who missed attacks every Tuesday at 4:59 am
-    let missedAttacksMonJob = new CronJob('0 59 4 * * 2', async () => {
-        let embed = new MessageEmbed().setColor(hex).setThumbnail(clan.logo);
-        embed = await createAttacksEmbed(embed, await getMembers(clan.tag, API_KEY.token()), mdbClient);
-
-        bot.channels.cache.get(missedAttacksChannelID).send(embed);
-    }, null, true, 'America/Chicago');
-
-    //send embed for who missed attacks every day (besides Monday and Tuesday) if final week
-    let finalWeekMissedAttacksJob = new CronJob('0 59 4 * * 0,3-6', async () => {
-        if(await isFinalWeek(API_KEY.token())){
-            let embed = new MessageEmbed().setColor(hex).setThumbnail(clan.logo);
-            embed = await createAttacksEmbed(embed, await getMembers(clan.tag, API_KEY.token()), mdbClient);
     
-            bot.channels.cache.get(missedAttacksChannelID).send(embed);
-        }
-    }, null, true, 'America/Chicago');
-
-    //send embeds for who missed attacks on Monday (week ends at ~4:43 AM CT)
-    let finalWeekLastDayMissedAttacksJob = new CronJob('0 35 4 * * 1', async () => {
-        if(await isFinalWeek(API_KEY.token())){
-            let embed = new MessageEmbed().setColor(hex).setThumbnail(clan.logo);
-            embed = await createAttacksEmbed(embed, await getMembers(clan.tag, API_KEY.token()), mdbClient);
-    
-            bot.channels.cache.get(missedAttacksChannelID).send(embed);
-        }
-    }, null, true, 'America/Chicago');
-
-    //delete all non-race matches and opponent matches every Monday at 5:00am CT
-    let deleteJob = new CronJob('0 0 5 * * 1', async () => {
-        const collection = mdbClient.db("Clan").collection("Matches");
-        const oppCollection = mdbClient.db("Clan").collection("Opp Matches");
-
-        oppCollection.deleteMany({});
-        collection.deleteMany({"raceDay": false});
-        collection.deleteMany({"type": "Boat Battle"});
-        
-        console.log("Deleted all Opp Matches from DB!")
-        console.log("Deleted all non-race matches from DB!");
-        console.log("Deleted all boat battles from DB!");
-    }, null, true, 'America/Chicago');
-
-    missedAttacksMonJob.start();
-    deleteJob.start();
-    finalWeekMissedAttacksJob.start();
-    finalWeekLastDayMissedAttacksJob.start();
 });
 
 // -------------------------------------------------------------------
@@ -188,7 +138,7 @@ bot.on('message', async message => {
     if(!bot.commands.has(command)) return;
 
     try{
-        bot.commands.get(command).execute(message, args, mdbClient, API_KEY, bot);
+        bot.commands.get(command).execute(message, args, bot);
     } catch(err) {
         console.error(err);
     }
