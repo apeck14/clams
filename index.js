@@ -1,11 +1,11 @@
-const { MessageEmbed, Client, Collection } = require('discord.js');
+const { Client, Collection } = require('discord.js');
 const fs = require('fs');
 const { CronJob } = require('cron');
 const mongoUtil = require('./util/mongoUtil');
 const { getMembers, tag, updateWarMatches, isColosseumWeek, isRaceDay, name, hex, logo } = require('./util/clanUtil');
 const { prefix } = require('./config.json');
 const { request, sortArrByDate, getMinsDiff } = require('./util/otherUtil');
-const { clanLogChannelID } = require('./util/serverUtil');
+const { clanLogChannelID, missedAttacksChannelID, createAttacksEmbed } = require('./util/serverUtil');
 const { setLastUpdated } = require('./util/lastUpdatedUtil');
 
 const bot = new Client();
@@ -18,6 +18,15 @@ for(const file of commandFiles){
     bot.commands.set(command.name, command);
 }
 
+// ----------------------- JOBS --------------------------------------
+//send embed for who missed attacks everyday at 4:59 am
+const missedAttacksJob = new CronJob('0 34 5 * * *', async () => {
+    const members = await getMembers();
+    await updateWarMatches(members);
+
+    bot.channels.cache.get(missedAttacksChannelID).send({ embed: await createAttacksEmbed()});
+}, null, true, 'America/Chicago');
+
 // --------------------- MAIN ----------------------------------------
 
 bot.once('ready', async () => {
@@ -28,6 +37,8 @@ bot.once('ready', async () => {
             name: '?help'
         }
     });
+
+    missedAttacksJob.start();
 
     const mins = 5; //mins to update matches
     const interval = mins * 60 * 1000;
