@@ -143,7 +143,7 @@ const clanUtil = {
                         }
     
                         collection.insertOne(match);
-                        console.dir(match);
+                        console.log(match);
                     }
                 } catch (e){
                     console.dir(b);
