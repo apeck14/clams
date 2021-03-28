@@ -13,6 +13,7 @@ module.exports = {
 
             const attacksLeftObj = await getAttacksLeft();
             const attacksCompleted = attacksLeftObj.remainingAttacks.filter(p => p.attacksLeft === 0);
+            const noMatchesCompleted = attacksLeftObj.totalWins + attacksLeftObj.totalLosses === 0;
             const totalMembers = attacksCompleted.length;
 
             for(const p of attacksCompleted){
@@ -55,7 +56,7 @@ module.exports = {
                 },
                 description: desc(),
                 footer: {
-                    text: LUFooter()
+                    text: noMatchesCompleted ? null : LUFooter()
                 }
             }
 
