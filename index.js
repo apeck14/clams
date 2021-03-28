@@ -109,9 +109,7 @@ bot.once('ready', async () => {
             await updateWarMatches(await getMembers());
         }
 
-        console.log(lastUpdated)
         setLastUpdated();
-        console.log(lastUpdated)
     }, interval);
     
     

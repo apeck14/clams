@@ -49,7 +49,7 @@ const clanUtil = {
         const isOurClan = cTag === clanUtil.tag;
 
         const db = await mongoUtil.db("Clan");
-        const collection = isOurClan ? db.collection("Test Matches") : db.collection("Test Opp Matches");
+        const collection = isOurClan ? db.collection("Matches") : db.collection("Opp Matches");
 
         const rr = await request(`https://proxy.royaleapi.dev/v1/clans/%23${cTag}/currentriverrace`);
         const log = await request(`https://proxy.royaleapi.dev/v1/clans/%23${cTag}/riverracelog`);
