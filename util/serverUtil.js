@@ -1,5 +1,5 @@
 const { getAttacksLeft, hex, logo } = require("./clanUtil");
-const { lastUpdated, getMinsDiff } = require("./otherUtil");
+const { LUFooter } = require("./lastUpdatedUtil");
 
 const serverUtil = {
     commandsChannelID: "816334813962960926",
@@ -49,14 +49,11 @@ const serverUtil = {
             },
             description: desc(),
             footer: {
-                text: serverUtil.LUFooter()
+                text: LUFooter()
             }
         };
 
         return attacksEmbed;
-    },
-    LUFooter: () => {
-        return `Matches Last Updated: ${getMinsDiff(lastUpdated)} min(s) ago`;
     }
 };
 

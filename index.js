@@ -4,8 +4,9 @@ const { CronJob } = require('cron');
 const mongoUtil = require('./util/mongoUtil');
 const { getMembers, tag, updateWarMatches, isColosseumWeek, isRaceDay, name, hex, logo } = require('./util/clanUtil');
 const { prefix } = require('./config.json');
-const { request, setLastUpdated, sortArrByDate, getMinsDiff, lastUpdated } = require('./util/otherUtil');
+const { request, sortArrByDate, getMinsDiff } = require('./util/otherUtil');
 const { clanLogChannelID } = require('./util/serverUtil');
+const { setLastUpdated } = require('./util/lastUpdatedUtil');
 
 const bot = new Client();
 bot.commands = new Collection();

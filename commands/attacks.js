@@ -1,7 +1,8 @@
-const { createAttacksEmbed, LUFooter } = require("../util/serverUtil");
+const { createAttacksEmbed } = require("../util/serverUtil");
 const { getAttacksLeft, hex, logo } = require('../util/clanUtil');
 const mongoUtil = require("../util/mongoUtil");
 const { parseDate, getMinsDiff } = require("../util/otherUtil");
+const { LUFooter } = require("../util/lastUpdatedUtil");
 
 module.exports = {
     name: 'attacks',

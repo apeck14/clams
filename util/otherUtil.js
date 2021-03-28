@@ -2,10 +2,6 @@ const axios = require('axios');
 const API_KEY = require('./tokenUtil.js');
 
 const otherUtil = {
-    lastUpdated: new Date(),
-    setLastUpdated: () => {
-        otherUtil.lastUpdated = new Date();
-    },
     parseDate: date => {
         if(date instanceof Date) return date;
         try{
