@@ -89,6 +89,12 @@ const otherUtil = {
             const mins = Math.floor((diff/1000)/60);
             return mins;
         }
+    },
+    median: arr => {
+        if(!Array.isArray(arr)) return;
+
+        if(arr.length % 2 === 0) return Math.round((arr[arr.length / 2] + arr[arr.length / 2 - 1]) / 2);
+        return arr[Math.floor(arr.length / 2)];
     }
 }
 
