@@ -5,7 +5,7 @@ const serverUtil = {
     commandsChannelID: "816334813962960926",
     missedAttacksChannelID: "816435861033582642",
     applyChannelID: "796185828366876702",
-    appicationsChannelID: "816435969070202950",
+    applicationsChannelID: "816435969070202950",
     clanLogChannelID: "816436105779085366",
     adminChannelID: "816445569777139712",
     serverEmojis: [
