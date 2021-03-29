@@ -60,7 +60,7 @@ const clanUtil = {
             //loop through player's recent matches
             for(const b of battleLog){
                 try{
-                    if(b.type !== 'riverRacePvP' && b.type !== 'riverRaceDuel' && b.type !== 'boatBattle') continue; //non war match
+                    if(b.type !== 'riverRacePvP' && b.type !== 'riverRaceDuel' && b.type !== 'boatBattle' && b.type !== 'riverRaceDuelColosseum') continue; //non war match
                     else if(b.type === 'boatBattle' && b.boatBattleSide === 'defender') continue; //defensive boat battle
     
                     const matchExists = await collection.findOne({"tag": b.team[0].tag, "battleTime": b.battleTime});
@@ -78,7 +78,7 @@ const clanUtil = {
                         const type = () => {
                             if(b.type === "boatBattle") return "boat";
                             if(b.type === "riverRacePvP") return "battle";
-                            if(b.type === "riverRaceDuel") return "duel";
+                            if(b.type === "riverRaceDuel" || b.type === "riverRaceDuelColosseum") return "duel";
                         };
                         const isRaceMatch = () => {
                             //race is active and match is after reset
