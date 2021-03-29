@@ -5,7 +5,7 @@ const mongoUtil = require('./util/mongoUtil');
 const { getMembers, tag, updateWarMatches, isColosseumWeek, isRaceDay, name, hex, logo } = require('./util/clanUtil');
 const { prefix } = require('./config.json');
 const { request, sortArrByDate, getMinsDiff } = require('./util/otherUtil');
-const { clanLogChannelID, missedAttacksChannelID, createAttacksEmbed, adminChannelID } = require('./util/serverUtil');
+const { clanLogChannelID, missedAttacksChannelID, createAttacksEmbed, adminChannelID, commandsChannelID } = require('./util/serverUtil');
 const { setLastUpdated } = require('./util/lastUpdatedUtil');
 
 const bot = new Client();
@@ -147,6 +147,7 @@ bot.on('message', async message => {
 
     try{
         if(bot.commands.get(command).adminCommand && message.channel.id !== adminChannelID) return message.channel.send(new MessageEmbed().setColor(hex).setDescription('You cannot use that command here!'));
+        else if(command !== 'apply' && message.channel.id !== commandsChannelID) return message.channel.send(new MessageEmbed().setColor(hex).setDescription('You cannot use that command here!'));
         bot.commands.get(command).execute(message, args, bot);
     } catch(err) {
         console.error(err);

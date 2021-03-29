@@ -5,8 +5,9 @@ const { applicationsChannelID, applyChannelID } = require("../util/serverUtil");
 module.exports = {
     name: 'apply',
     execute: async (message, arg, bot) => {
-        if(!arg) return message.channel.send(new MessageEmbed().setColor(hex).setDescription("No player tag given! (Ex: **?player #ABC123**)"));
-        else if(message.channel.id !== applyChannelID) return message.channel.send(new MessageEmbed().setColor(hex).setDescription("This command cannot be used here!"));
+        if(message.channel.id !== applyChannelID) return message.channel.send(new MessageEmbed().setColor(hex).setDescription("This command cannot be used here!"));
+        else if(!arg) return message.channel.send(new MessageEmbed().setColor(hex).setDescription("No player tag given! (Ex: **?player #ABC123**)"));
+        
         arg = arg[0] === "#" ? arg.substr(1) : arg;
 
         const player = await getPlayerData(arg);
