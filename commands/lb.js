@@ -1,4 +1,5 @@
 const { hex, logo, clanWarStats } = require("../util/clanUtil");
+const { LUFooter } = require("../util/lastUpdatedUtil");
 
 module.exports = {
     name: 'lb',
@@ -26,6 +27,9 @@ module.exports = {
             description: desc(),
             thumbnail: {
                 url: logo
+            },
+            footer: {
+                text: LUFooter()
             }
         }
 
