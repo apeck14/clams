@@ -6,7 +6,8 @@ module.exports = {
     execute(message) {
       const commands = [
         {name: "attacks <C>", desc: "Get list of players with remaining war attacks", main: true},
-        {name: "player <TAG>", desc: "Get information about a player", main: true}
+        {name: "player <TAG>", desc: "Get information about a player", main: true},
+        {name: 'lb', desc: 'Get war leaderboard', main: true}
       ];
   
       commands.sort((a, b) => {
