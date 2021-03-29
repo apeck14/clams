@@ -1,11 +1,11 @@
-const { Client, Collection } = require('discord.js');
+const { Client, Collection, MessageEmbed } = require('discord.js');
 const fs = require('fs');
 const { CronJob } = require('cron');
 const mongoUtil = require('./util/mongoUtil');
 const { getMembers, tag, updateWarMatches, isColosseumWeek, isRaceDay, name, hex, logo } = require('./util/clanUtil');
 const { prefix } = require('./config.json');
 const { request, sortArrByDate, getMinsDiff } = require('./util/otherUtil');
-const { clanLogChannelID, missedAttacksChannelID, createAttacksEmbed } = require('./util/serverUtil');
+const { clanLogChannelID, missedAttacksChannelID, createAttacksEmbed, adminChannelID } = require('./util/serverUtil');
 const { setLastUpdated } = require('./util/lastUpdatedUtil');
 
 const bot = new Client();
@@ -123,8 +123,6 @@ bot.once('ready', async () => {
 
         setLastUpdated();
     }, interval);
-    
-    
 });
 
 // -------------------------------------------------------------------
@@ -148,6 +146,7 @@ bot.on('message', async message => {
     if(!bot.commands.has(command)) return;
 
     try{
+        if(bot.commands.get(command).adminCommand && message.channel.id !== adminChannelID) return message.channel.send(new MessageEmbed().setColor(hex).setDescription('You cannot use that command here!'));
         bot.commands.get(command).execute(message, args, bot);
     } catch(err) {
         console.error(err);
