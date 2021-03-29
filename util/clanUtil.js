@@ -441,8 +441,8 @@ const clanUtil = {
 
                 const date = parseDate(m.battleTime);
 
-                //non-colosseum (race match) on monday || colosseum non-race matches
-                if((!m.isColosseumMatch && date.getUTCDay() === 1) || (m.isColosseumMatch && !m.isRaceMatch)){
+                //non-colosseum (race match) on monday || colosseum matches
+                if((!m.isColosseumMatch && date.getUTCDay() === 1) || m.isColosseumMatch){
                     if(m.type === 'battle') (m.won) ? wins++ : losses++;
                     else if(m.type === 'duel'){
                         if(m.matchCount === 2) (m.won) ? wins += 2 : losses += 2;
