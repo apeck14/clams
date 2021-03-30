@@ -146,10 +146,14 @@ bot.on('message', async message => {
     if(!bot.commands.has(command)) return;
 
     try{
+        message.channel.startTyping();
+
         if(bot.commands.get(command).adminCommand && message.channel.id === adminChannelID) bot.commands.get(command).execute(message, args, bot);
         else if(command === 'apply' && message.channel.id === applyChannelID) bot.commands.get(command).execute(message, args, bot);
         else if(command !== 'apply' && !bot.commands.get(command).adminCommand && message.channel.id === commandsChannelID) bot.commands.get(command).execute(message, args, bot);
         else message.channel.send(new MessageEmbed().setColor(hex).setDescription('You cannot use that command here!'));
+
+        message.channel.stopTyping();
     } catch(err) {
         console.error(err);
     }
