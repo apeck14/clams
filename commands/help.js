@@ -7,7 +7,8 @@ module.exports = {
       const commands = [
         {name: "attacks <C>", desc: "Get list of players with remaining war attacks", main: true},
         {name: "player <TAG>", desc: "Get information about a player", main: true},
-        {name: 'lb', desc: 'Get war leaderboard', main: true}
+        {name: 'lb <FULL>', desc: 'Get war leaderboard', main: true},
+        {name: 'fw', desc: 'Get current Colosseum information'}
       ];
   
       commands.sort((a, b) => {

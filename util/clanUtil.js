@@ -153,8 +153,8 @@ const clanUtil = {
     },
     getAttacksLeft: async (startTime = mostRecentWarReset(), endTime = new Date(), clanTag = clanUtil.tag) => {
         try{
-            if(typeof startTime === 'string') startTime = parseDate(startTime);
-            if(typeof endTime === 'string') startTime = parseDate(endTime);
+            startTime = parseDate(startTime);
+            endTime = parseDate(endTime);
 
             const db = await mongoUtil.db("Clan");
             const collection = clanTag === clanUtil.tag ? db.collection('Matches') : db.collection('Opp Matches');
