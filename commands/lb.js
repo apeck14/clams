@@ -15,10 +15,10 @@ module.exports = {
 
             for(let i = 0; i < members.length; i++){
                 const p = members[i];
-                if(i === 0) desc += `:first_place: **${p.name}**: ${p.wins}-${p.losses}`;
-                else if(i === 1) desc += `\n:second_place: **${p.name}**: ${p.wins}-${p.losses}`;
-                else if(i === 2) desc += `\n:third_place: **${p.name}**: ${p.wins}-${p.losses}`;
-                else desc += `\n${i+1}. **${p.name}**: ${p.wins}-${p.losses}`;
+                if(i === 0) desc += `:first_place: **${p.name}**: ${(p.wins / (p.wins + p.losses) * 100).toFixed(0)}% (${p.wins}-${p.losses})`;
+                else if(i === 1) desc += `\n:second_place: **${p.name}**: ${(p.wins / (p.wins + p.losses) * 100).toFixed(0)}% (${p.wins}-${p.losses})`;
+                else if(i === 2) desc += `\n:third_place: **${p.name}**: ${(p.wins / (p.wins + p.losses) * 100).toFixed(0)}% (${p.wins}-${p.losses})`;
+                else desc += `\n${i+1}. **${p.name}**: ${(p.wins / (p.wins + p.losses) * 100).toFixed(0)}% (${p.wins}-${p.losses})`;
             }
 
             return desc;
