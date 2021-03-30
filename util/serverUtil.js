@@ -50,7 +50,7 @@ const serverUtil = {
             },
             description: desc(),
             footer: {
-                text: LUFooter()
+                text: (fourAttacksLeft || threeAttacksLeft || twoAttacksLeft || oneAttackLeft) ? LUFooter() : null
             }
         };
 
