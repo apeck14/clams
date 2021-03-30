@@ -19,13 +19,12 @@ module.exports = {
                 const c = clansByFame[i];
 
                 const attacksLeftObj = await getAttacksLeft(mostRecentWarReset(), new Date(), c.tag);
-                const attacksLeft = 200 - attacksLeftObj.attacksUsed;
 
                 let winPerc = (attacksLeftObj.totalWins / (attacksLeftObj.totalWins + attacksLeftObj.totalLosses) * 100).toFixed(1);
                 if(attacksLeftObj.totalWins + attacksLeftObj.totalLosses === 0) winPerc = '0.0%';
                 
-                if(c.name === name) desc += `__**${i+1}. ${c.name}**__\n${fameEmoji}: ${c.fame}\nToday's Win %: **${winPerc}%**\nAttacks Left: **${attacksLeft}**\n\n`;
-                else desc += `**${i+1}. ${c.name}**\n${fameEmoji}: ${c.fame}\nToday's Win %: **${winPerc}%**\nAttacks Left: **${attacksLeft}**\n\n`;
+                if(c.name === name) desc += `__**${i+1}. ${c.name}**__\n${fameEmoji}: ${c.fame}\nToday's Win %: **${winPerc}%**\nAttacks Left: **${attacksLeftObj.attacksLeft}**\n\n`;
+                else desc += `**${i+1}. ${c.name}**\n${fameEmoji}: ${c.fame}\nToday's Win %: **${winPerc}%**\nAttacks Left: **${attacksLeftObj.attacksLeft}**\n\n`;
             }
 
             return desc;

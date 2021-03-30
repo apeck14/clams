@@ -160,33 +160,32 @@ const clanUtil = {
             const db = await mongoUtil.db("Clan");
             const collection = clanTag === clanUtil.tag ? db.collection('Matches') : db.collection('Opp Matches');
 
-            const members = await clanUtil.getMembers(clanTag);
-            const matches = await collection.find({clanTag: '#'+clanTag}).toArray();
+            const [members, matches] = await Promise.all([clanUtil.getMembers(clanTag), collection.find({clanTag: '#'+clanTag}).toArray()]);
+            const memberTags = members.map(m => m.tag);
+
+            const membersWhoLeftMidWar = [];
 
             const attacksUsed = {
                 totalWins: 0,
                 totalLosses: 0,
-                attacksUsed: 0,
                 remainingAttacks: members.map(m => ({name: m.name, tag: m.tag, attacksLeft: 4}))
             };
             
             //loop through all matches in DB
             for(const m of matches){
                 if(!isBetweenDates(m.battleTime, startTime, endTime)) continue;
+                if(memberTags.indexOf(m.tag) === -1 && membersWhoLeftMidWar.indexOf(m.tag) === -1) membersWhoLeftMidWar.push(m.tag);
 
                 const player = attacksUsed.remainingAttacks.find(p => p.tag === m.tag);
 
                 if(m.type === 'boat') {
-                    attacksUsed.attacksUsed++;
                     if(player) player.attacksLeft -= 1;
                 }
                 else if(m.type === 'battle'){
-                    attacksUsed.attacksUsed++;
                     if(player) player.attacksLeft -= 1;
                     (m.won) ? attacksUsed.totalWins++ : attacksUsed.totalLosses++;
                 }
                 else if(m.type === 'duel'){
-                    attacksUsed.attacksUsed += m.matchCount;
                     if(player) player.attacksLeft -= m.matchCount;
 
                     if(m.matchCount === 2) (m.won) ? attacksUsed.totalWins += 2 : attacksUsed.totalLosses += 2;
@@ -208,6 +207,23 @@ const clanUtil = {
                 
             }
 
+            //200 - attacks used by current members, 4 * amount of players no longer in clan with used attack today
+            const atksLeft = () => {
+                const playersWith4Attacks = attacksUsed.remainingAttacks.filter(p => p.attacksLeft === 4).length;
+                const atksUsed = attacksUsed.remainingAttacks.map(p => 4 - p.attacksLeft).reduce((a, b) => a + b, 0);
+                //const atksUsed = atksUsedArr.reduce((a, b) => a + b, 0);
+
+                let attacksLeft = 200;
+                let iterations = (playersWith4Attacks > membersWhoLeftMidWar.length) ? membersWhoLeftMidWar.length : playersWith4Attacks;
+
+                attacksLeft -= 4 * membersWhoLeftMidWar.length;
+                attacksLeft -= atksUsed;
+
+                return attacksLeft;
+            };
+
+            attacksUsed.attacksLeft = atksLeft();
+
             //check if anyone with 4 attacks is new, if so check their recent matches and see if they have any attacks left
             for(const mem of attacksUsed.remainingAttacks){
                 if(mem.attacksLeft === 4){
@@ -221,7 +237,7 @@ const clanUtil = {
                             else if(b.type === 'boatBattle' && b.boatBattleSide === 'defender') continue; //defensive boat battle
                             else if(!isBetweenDates(b.battleTime, startTime, endTime)) continue;
 
-                            //if war match was done todau, but in a different clan
+                            //if war match was done today, but in a different clan
                             if(b.team[0].clan.tag !== '#'+clanUtil.tag)
                                 mem.attacksLeft = 0;
                         }
