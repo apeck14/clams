@@ -153,6 +153,7 @@ const clanUtil = {
     },
     getAttacksLeft: async (startTime = mostRecentWarReset(), endTime = new Date(), clanTag = clanUtil.tag) => {
         try{
+            clanTag = (clanTag[0] === '#') ? clanTag.substr(1) : clanTag;
             startTime = parseDate(startTime);
             endTime = parseDate(endTime);
 
@@ -160,11 +161,12 @@ const clanUtil = {
             const collection = clanTag === clanUtil.tag ? db.collection('Matches') : db.collection('Opp Matches');
 
             const members = await clanUtil.getMembers(clanTag);
-            const matches = await collection.find({tag: { $in: members.map(m => m.tag) }}).toArray();
+            const matches = await collection.find({clanTag: '#'+clanTag}).toArray();
 
             const attacksUsed = {
                 totalWins: 0,
                 totalLosses: 0,
+                attacksUsed: 0,
                 remainingAttacks: members.map(m => ({name: m.name, tag: m.tag, attacksLeft: 4}))
             };
             
@@ -174,13 +176,18 @@ const clanUtil = {
 
                 const player = attacksUsed.remainingAttacks.find(p => p.tag === m.tag);
 
-                if(m.type === 'boat') player.attacksLeft -= 1;
+                if(m.type === 'boat') {
+                    attacksUsed.attacksUsed++;
+                    if(player) player.attacksLeft -= 1;
+                }
                 else if(m.type === 'battle'){
-                    player.attacksLeft -= 1;
+                    attacksUsed.attacksUsed++;
+                    if(player) player.attacksLeft -= 1;
                     (m.won) ? attacksUsed.totalWins++ : attacksUsed.totalLosses++;
                 }
                 else if(m.type === 'duel'){
-                    player.attacksLeft -= m.matchCount;
+                    attacksUsed.attacksUsed += m.matchCount;
+                    if(player) player.attacksLeft -= m.matchCount;
 
                     if(m.matchCount === 2) (m.won) ? attacksUsed.totalWins += 2 : attacksUsed.totalLosses += 2;
                     else{

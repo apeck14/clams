@@ -3,7 +3,6 @@ const { isColosseumWeek, hex, tag, getAttacksLeft, name, logo } = require("../ut
 const { request, mostRecentWarReset } = require("../util/otherUtil");
 const { serverEmojis } = require("../util/serverUtil");
 
-
 module.exports = {
     name: 'fw',
     execute: async (message) => {
@@ -19,8 +18,8 @@ module.exports = {
             for(let i = 0; i < clansByFame.length; i++){
                 const c = clansByFame[i];
 
-                const attacksLeftObj = await getAttacksLeft(mostRecentWarReset(), new Date(), c.tag.substr(1));
-                const attacksLeft = attacksLeftObj.remainingAttacks.reduce((a, b) => a + b.attacksLeft, 0);
+                const attacksLeftObj = await getAttacksLeft(mostRecentWarReset(), new Date(), c.tag);
+                const attacksLeft = 200 - attacksLeftObj.attacksUsed;
 
                 let winPerc = (attacksLeftObj.totalWins / (attacksLeftObj.totalWins + attacksLeftObj.totalLosses) * 100).toFixed(1);
                 if(attacksLeftObj.totalWins + attacksLeftObj.totalLosses === 0) winPerc = '0.0%';
