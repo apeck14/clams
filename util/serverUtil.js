@@ -18,7 +18,7 @@ const serverUtil = {
         const remainingAttacks = attacksLeftObj.remainingAttacks;
 
         const winPerc = (attacksLeftObj.totalWins / (attacksLeftObj.totalWins + attacksLeftObj.totalLosses)) * 100;
-        const attacksLeft = remainingAttacks.reduce((a, b) => a + b.attacksLeft, 0);
+        const attacksLeft = attacksLeftObj.attacksLeft;
         const membersLeft = remainingAttacks.filter(m => m.attacksLeft > 0).length;
         const noMatches = attacksLeftObj.totalWins + attacksLeftObj.totalLosses === 0;
 
