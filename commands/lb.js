@@ -3,15 +3,18 @@ const { LUFooter } = require("../util/lastUpdatedUtil");
 
 module.exports = {
     name: 'lb',
-    execute: async (message) => {
+    execute: async (message, arg) => {
         const memberStats = await clanWarStats();
         
         const desc = () => {
-            const top10 = memberStats.filter(p => memberStats.indexOf(p) < 10);
+            let members;
             let desc = '';
 
-            for(let i = 0; i < 10; i++){
-                const p = top10[i];
+            if(arg.toLowerCase() === 'full') members = memberStats;
+            else members = memberStats.filter(p => memberStats.indexOf(p) < 10);
+
+            for(let i = 0; i < members.length; i++){
+                const p = members[i];
                 if(i === 0) desc += `:first_place: **${p.name}**: ${p.wins}-${p.losses}`;
                 else if(i === 1) desc += `\n:second_place: **${p.name}**: ${p.wins}-${p.losses}`;
                 else if(i === 2) desc += `\n:third_place: **${p.name}**: ${p.wins}-${p.losses}`;
