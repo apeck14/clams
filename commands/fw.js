@@ -6,20 +6,18 @@ const { serverEmojis } = require("../util/serverUtil");
 
 module.exports = {
     name: 'fw',
-    execute: async (message) => {
+    execute: async (message, arg) => {
         if(!isColosseumWeek()) return message.channel.send(new MessageEmbed().setColor(hex).setDescription("This command is only available during **Colosseum** week!"));
 
         const colWeek = await request(`https://proxy.royaleapi.dev/v1/clans/%23${tag}/currentriverrace`);
         const clansByFame = colWeek.clans.sort((a, b) => b.fame - a.fame).map(c => ({name: c.name, tag: c.tag, fame: c.fame}));
         const fameEmoji = serverEmojis.find(e => e.name === "fame").input;
 
-        const desc = async () => {
-            const clanPromises = clansByFame.map(c => getAttacksLeft(mostRecentWarReset(), new Date(), c.tag));
-            const clansAttacksLeftObj = await Promise.all(clanPromises);
-            let desc = '';
+        const clanPromises = clansByFame.map(c => getAttacksLeft(mostRecentWarReset(), new Date(), c.tag));
+        const clansAttacksLeftObj = await Promise.all(clanPromises);
 
-            console.log(clansByFame);
-            console.log(clansAttacksLeftObj)
+        const desc = async () => {
+            let desc = '';
 
             for(let i = 0; i < clansAttacksLeftObj.length; i++){
                 const cObj = clansAttacksLeftObj[i];
@@ -46,6 +44,9 @@ module.exports = {
                 text: LUFooter()
             }
         }
+
+        //log for bugs
+        if(arg.toLowerCase() === 'log') clansAttacksLeftObj.forEach(c => console.dir(c));
 
         message.channel.send({ embed: fwEmbed });
 
