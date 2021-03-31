@@ -15,7 +15,7 @@ module.exports = {
         const matchesByMember = (await Promise.all(matchesByMemberPromises)).filter(p => p.length > 0);
 
         const memberStats = (await clanWarStats()).reverse();
-        const lessThan35Percent = memberStats.filter(p => p.wins / (p.wins + p.losses) <= 0.35);
+        const lessThan40Percent = memberStats.filter(p => p.wins / (p.wins + p.losses) < 0.4);
         const noTuesdayAMMatches = [];
         
         //find players with no Tuesday AM war matches
@@ -41,7 +41,7 @@ module.exports = {
             let desc = '';
 
             if(noTuesdayAMMatches.length > 0) desc += `**__No Tuesday Race Matches__**${noTuesdayAMMatches.map(p => `\n• **${p}**`).join('')}`;
-            if(lessThan35Percent.length > 0) desc += `\n\n**__Below 35% W/L__**${lessThan35Percent.map(p => `\n• **${p.name}**: ${(p.wins/(p.wins+p.losses)*100).toFixed()}% (${p.wins}-${p.losses})`).join('')}`;
+            if(lessThan40Percent.length > 0) desc += `\n\n**__Below 40% W/L__**${lessThan40Percent.map(p => `\n• **${p.name}**: ${(p.wins/(p.wins+p.losses)*100).toFixed()}% (${p.wins}-${p.losses})`).join('')}`;
 
             return desc;
         }
