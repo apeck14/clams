@@ -5,12 +5,18 @@ module.exports = {
     name: 'lb',
     execute: async (message, arg) => {
         const memberStats = await clanWarStats();
+
+        const totalWins = memberStats.reduce((a, b) => a + b.wins, 0);
+        const totalLosses = memberStats.reduce((a, b) => a + b.losses, 0);
         
         const desc = () => {
             let members;
             let desc = '';
 
-            if(arg.toLowerCase() === 'full') members = memberStats;
+            if(arg.toLowerCase() === 'full'){
+                members = memberStats;
+                desc += `**Clan W/L %**: ${(totalWins/(totalWins+totalLosses)*100).toFixed(1)}% (${totalWins}-${totalLosses})\n\n`;
+            }
             else members = memberStats.filter(p => memberStats.indexOf(p) < 10);
 
             for(let i = 0; i < members.length; i++){
