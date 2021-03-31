@@ -1,5 +1,6 @@
 const { MessageEmbed } = require("discord.js")
 const { isColosseumWeek, hex, tag, getAttacksLeft, name, logo } = require("../util/clanUtil");
+const { LUFooter } = require("../util/lastUpdatedUtil");
 const { request, mostRecentWarReset } = require("../util/otherUtil");
 const { serverEmojis } = require("../util/serverUtil");
 
@@ -13,18 +14,22 @@ module.exports = {
         const fameEmoji = serverEmojis.find(e => e.name === "fame").input;
 
         const desc = async () => {
+            const clanPromises = clansByFame.map(c => getAttacksLeft(mostRecentWarReset(), new Date(), c.tag));
+            const clansAttacksLeftObj = await Promise.all(clanPromises);
             let desc = '';
 
-            for(let i = 0; i < clansByFame.length; i++){
+            console.log(clansByFame);
+            console.log(clansAttacksLeftObj)
+
+            for(let i = 0; i < clansAttacksLeftObj.length; i++){
+                const cObj = clansAttacksLeftObj[i];
                 const c = clansByFame[i];
 
-                const attacksLeftObj = await getAttacksLeft(mostRecentWarReset(), new Date(), c.tag);
-
-                let winPerc = (attacksLeftObj.totalWins / (attacksLeftObj.totalWins + attacksLeftObj.totalLosses) * 100).toFixed(1);
-                if(attacksLeftObj.totalWins + attacksLeftObj.totalLosses === 0) winPerc = '0.0%';
+                let winPerc = (cObj.totalWins / (cObj.totalWins + cObj.totalLosses) * 100).toFixed(1);
+                if(cObj.totalWins + cObj.totalLosses === 0) winPerc = '0.0%';
                 
-                if(c.name === name) desc += `__**${i+1}. ${c.name}**__\n${fameEmoji}: ${c.fame}\nToday's Win %: **${winPerc}%**\nAttacks Left: **${attacksLeftObj.attacksLeft}**\n\n`;
-                else desc += `**${i+1}. ${c.name}**\n${fameEmoji}: ${c.fame}\nToday's Win %: **${winPerc}%**\nAttacks Left: **${attacksLeftObj.attacksLeft}**\n\n`;
+                if(c.name === name) desc += `__**${i+1}. ${c.name}**__\n${fameEmoji}: ${c.fame}\nToday's Win %: **${winPerc}%**\nAttacks Left: **${cObj.attacksLeft}**\n\n`;
+                else desc += `**${i+1}. ${c.name}**\n${fameEmoji}: ${c.fame}\nToday's Win %: **${winPerc}%**\nAttacks Left: **${cObj.attacksLeft}**\n\n`;
             }
 
             return desc;
@@ -36,6 +41,9 @@ module.exports = {
             description: await desc(),
             thumbnail: {
                 url: logo
+            },
+            footer: {
+                text: LUFooter()
             }
         }
 
