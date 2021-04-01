@@ -207,12 +207,8 @@ const clanUtil = {
 
             //200 - attacks used by current members, 4 * amount of players no longer in clan with used attack today
             const atksLeft = () => {
-                const playersWith4Attacks = attacksUsed.remainingAttacks.filter(p => p.attacksLeft === 4).length;
                 const atksUsed = attacksUsed.remainingAttacks.map(p => 4 - p.attacksLeft).reduce((a, b) => a + b, 0);
-                //const atksUsed = atksUsedArr.reduce((a, b) => a + b, 0);
-
                 let attacksLeft = 200;
-                let iterations = (playersWith4Attacks > membersWhoLeftMidWar.length) ? membersWhoLeftMidWar.length : playersWith4Attacks;
 
                 attacksLeft -= 4 * membersWhoLeftMidWar.length;
                 attacksLeft -= atksUsed;
