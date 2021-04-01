@@ -24,7 +24,7 @@ module.exports = {
                 const c = clansByFame[i];
 
                 let winPerc = (cObj.totalWins / (cObj.totalWins + cObj.totalLosses) * 100).toFixed(1);
-                if(cObj.totalWins + cObj.totalLosses === 0) winPerc = '0.0%';
+                if(cObj.totalWins + cObj.totalLosses === 0) winPerc = '0.0';
                 
                 if(c.name === name) desc += `__**${i+1}. ${c.name}**__\n${fameEmoji}: ${c.fame}\nToday's Win %: **${winPerc}%**\nAttacks Left: **${cObj.attacksLeft}**\n\n`;
                 else desc += `**${i+1}. ${c.name}**\n${fameEmoji}: ${c.fame}\nToday's Win %: **${winPerc}%**\nAttacks Left: **${cObj.attacksLeft}**\n\n`;
