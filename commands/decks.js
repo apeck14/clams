@@ -9,10 +9,11 @@ module.exports = {
     execute: async (message, arg, bot) => {
         arg = (arg[0] === '#') ? arg.substr(1) : arg;
 
-        message.channel.startTyping();
-
         const player = await request(`https://proxy.royaleapi.dev/v1/players/%23${arg}`);
         if(!player) return message.channel.send(new MessageEmbed().setColor(clanUtil.hex).setDescription('Invalid tag, or unexpected error.'));
+
+        message.channel.startTyping();
+        
         const name = player.name;
         const cards = player.cards.map(c => ({name: c.name.toLowerCase().replace(/ /g, '-'), level: 13 - (c.maxLevel - c.level), png: c.iconUrls.medium}));
 
