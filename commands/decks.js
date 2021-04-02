@@ -13,7 +13,7 @@ module.exports = {
         if(!player) return message.channel.send(new MessageEmbed().setColor(clanUtil.hex).setDescription('Invalid tag, or unexpected error.'));
 
         message.channel.startTyping();
-        
+
         const name = player.name;
         const cards = player.cards.map(c => ({name: c.name.toLowerCase().replace(/ /g, '-'), level: 13 - (c.maxLevel - c.level), png: c.iconUrls.medium}));
 
@@ -22,7 +22,7 @@ module.exports = {
             
             cardsToInclude.forEach(c => url += `&inc=${c}`); //cards to include
 
-            url += '&global_exclude=false';
+            url += '&&global_exclude=false';
             return url;
         }
 
