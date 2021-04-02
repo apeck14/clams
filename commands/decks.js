@@ -90,7 +90,7 @@ module.exports = {
                 url: clanUtil.logo
             },
             footer: {
-                text: 'Credit to RoyaleAPI'
+                text: 'Credit to RoyaleAPI for deck statistics'
             }
         }
         
