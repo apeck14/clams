@@ -9,6 +9,8 @@ module.exports = {
     execute: async (message, arg, bot) => {
         arg = (arg[0] === '#') ? arg.substr(1) : arg;
 
+        message.channel.startTyping();
+
         const player = await request(`https://proxy.royaleapi.dev/v1/players/%23${arg}`);
         if(!player) return message.channel.send(new MessageEmbed().setColor(clanUtil.hex).setDescription('Invalid tag, or unexpected error.'));
         const name = player.name;
@@ -94,7 +96,9 @@ module.exports = {
             }
         }
         
-        message.channel.send({ embed: decksEmbed })
+        message.channel.send({ embed: decksEmbed });
+
+        message.channel.stopTyping();
         
     }
 }
