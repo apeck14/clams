@@ -16,11 +16,10 @@ module.exports = {
         const name = player.name;
         const cards = player.cards.map(c => ({name: c.name.toLowerCase().replace(/ /g, '-'), level: 13 - (c.maxLevel - c.level), png: c.iconUrls.medium}));
 
-        const url = (cardsToInclude , cardsToExclude) => {
-            let url = `https://royaleapi.com/decks/popular?time=14d&sort=rating&size=10&players=PvP&min_trophies=5600&max_trophies=10000&min_elixir=1&max_elixir=9&mode=detail&type=Ladder`;
+        const url = (cardsToInclude) => {
+            let url = `https://royaleapi.com/decks/popular?time=14d&sort=win&size=10&players=PvP&min_trophies=5600&max_trophies=10000&min_elixir=1&max_elixir=9&mode=detail&type=Ladder`;
             
             cardsToInclude.forEach(c => url += `&inc=${c}`); //cards to include
-            cardsToExclude.forEach(c => url += `&exc=${c}`); //cards to exclude
 
             url += '&global_exclude=false';
             return url;
