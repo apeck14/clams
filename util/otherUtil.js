@@ -90,6 +90,11 @@ const otherUtil = {
             return mins;
         }
     },
+    getSecsDiff: (date) => {
+        date = otherUtil.parseDate(date);
+
+        return Math.abs((date - new Date()) / 1000);
+    },
     median: arr => {
         if(!Array.isArray(arr)) return;
 
