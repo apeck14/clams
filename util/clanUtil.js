@@ -306,83 +306,69 @@ const clanUtil = {
             return rating > 99 ? 99 : rating;
         };
         const trophyRating = player => {
-            const bestTrophies = player.bestTrophies;
+            const pb = player.bestTrophies;
     
-            if(bestTrophies < 4000) return 0;
-            else if(bestTrophies < 4500) return 10;
-            else if(bestTrophies < 5000) return 25;
-            else if(bestTrophies <= 5100) return 35;
-            else if(bestTrophies <= 5200) return 40;
-            else if(bestTrophies <= 5300) return 45;
-            else if(bestTrophies <= 5400) return 50;
-            else if(bestTrophies <= 5500) return 55;
-            else if(bestTrophies <= 5600) return 60;
-            else if(bestTrophies <= 5700) return 63;
-            else if(bestTrophies <= 5800) return 65;
-    
-            else if(bestTrophies <= 5820) return 66;
-            else if(bestTrophies <= 5840) return 67;
-            else if(bestTrophies <= 5860) return 68;
-            else if(bestTrophies <= 5880) return 69;
-            else if(bestTrophies <= 5900) return 70;
-    
-            else if(bestTrophies <= 5920) return 71;
-            else if(bestTrophies <= 5940) return 72;
-            else if(bestTrophies <= 5960) return 73;
-            else if(bestTrophies <= 5980) return 74;
-            else if(bestTrophies <= 6000) return 75;
-    
-            else if(bestTrophies <= 6033) return 76;
-            else if(bestTrophies <= 6066) return 77;
-            else if(bestTrophies <= 6100) return 78;
-    
-            else if(bestTrophies <= 6133) return 79;
-            else if(bestTrophies <= 6166) return 80;
-            else if(bestTrophies <= 6200) return 81;
-    
-            else if(bestTrophies <= 6225) return 82;
-            else if(bestTrophies <= 6250) return 83;
-            else if(bestTrophies <= 6275) return 84;
-            else if(bestTrophies <= 6300) return 85;
-    
-            else if(bestTrophies <= 6350) return 86;
-            else if(bestTrophies <= 6400) return 87;
-    
-            else if(bestTrophies <= 6450) return 88;
-            else if(bestTrophies <= 6500) return 89;
-    
-            else if(bestTrophies <= 6550) return 90;
-            else if(bestTrophies <= 6600) return 91;
-    
-            else if(bestTrophies <= 6650) return 92;
-            else if(bestTrophies <= 6700) return 93;
-    
-            else if(bestTrophies <= 6750) return 94;
-            else if(bestTrophies <= 6800) return 95;
-    
-            else if(bestTrophies <= 6850) return 96;
-            else if(bestTrophies <= 6900) return 97;
-    
-            else if(bestTrophies < 7000) return 98;
-    
-            else return 99;
+            if(pb >= 7300) return 99;
+            else if(pb >= 7150) return 98;
+            else if(pb >= 7000) return 97;
+            else if(pb >= 6900) return 96;
+            else if(pb >= 6800) return 95;
+            else if(pb >= 6700) return 94;
+            else if(pb >= 6600) return 92;
+            else if(pb >= 6500) return 90;
+
+            else if(pb >= 6400) return 89;
+            else if(pb >= 6350) return 88;
+            else if(pb >= 6300) return 87;
+            else if(pb >= 6250) return 86;
+            else if(pb >= 6200) return 85;
+            else if(pb >= 6150) return 84;
+            else if(pb >= 6100) return 83;
+            else if(pb >= 6050) return 81;
+            else if(pb >= 6000) return 80;
+
+            else if(pb >= 5900) return 77;
+            else if(pb >= 5800) return 73;
+            else if(pb >= 5700) return 70;
+
+            else if(pb >= 5600) return 65;
+            else if(pb >= 5500) return 62;
+
+            else if(pb >= 5400) return 58;
+            else if(pb >= 5300) return 53;
+            else if(pb >= 5200) return 50;
+
+            else if(pb >= 5000) return 40;
+            else if(pb >= 4000) return 25;
+            else if(pb >= 3000) return 5;
+            else return 1;
         };
         const challRating = player => {
             const maxWins = player.challengeMaxWins;
-            if(maxWins === 0) return 0;
             
-            let rating = 0;
+            if(maxWins === 20) return 99;
+            else if(maxWins === 19) return 97;
+            else if(maxWins === 18) return 96;
+            else if(maxWins === 17) return 95;
+            else if(maxWins === 16) return 93;
+            else if(maxWins === 15) return 90;
 
-            for(let i = 1; i < maxWins + 1; i++){
-                if(i < 6) rating += 5;
-                else if(i < 10) rating += 7;
-                else if(i < 13) rating += 10;
-                else if(i < 17) rating += 3;
-                else if(i === 17) rating += 2;
-                else rating++;
-            }
-    
-            return rating - 1;
+            else if(maxWins === 14) return 88;
+            else if(maxWins === 13) return 86;
+            else if(maxWins === 12) return 84;
+            else if(maxWins === 11) return 81;
+
+            else if(maxWins === 10) return 75;
+            else if(maxWins === 9) return 70;
+            else if(maxWins === 8) return 65;
+            else if(maxWins === 7) return 55;
+            else if(maxWins === 6) return 45;
+            else if(maxWins === 5) return 40;
+            else if(maxWins === 4) return 35;
+            else if(maxWins === 3) return 30;
+            else if(maxWins === 2) return 20;
+            else if(maxWins === 1) return 10;
+            else return 1;
         };
         const achievements = player => {
             const warWins = player.warDayWins;
@@ -431,7 +417,7 @@ const clanUtil = {
         const playerPromises = tags.map(p => request(`https://proxy.royaleapi.dev/v1/players/%23${p[0] === '#' ? p.substr(1) : p}`));
         const players = await Promise.all(playerPromises);
         let ratings = players.map(p => (cardRating(p) * cardWeight) + (trophyRating(p) * trophyWeight) + (challRating(p) * challWeight) + achievements(p));
-        ratings = ratings.map(p => p > 99 ? 99 : p);
+        ratings = ratings.map(p => p > 99 ? 99 : p); //reduce any scores above 99
 
         ratings.sort();
 
