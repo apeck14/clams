@@ -1,8 +1,9 @@
 const { createAttacksEmbed } = require("../util/serverUtil");
-const { getAttacksLeft, hex, logo } = require('../util/clanUtil');
+const { hex, logo } = require('../util/clanUtil');
 const mongoUtil = require("../util/mongoUtil");
-const { parseDate, getMinsDiff } = require("../util/otherUtil");
+const { getSecsDiff } = require("../util/otherUtil");
 const { LUFooter } = require("../util/lastUpdatedUtil");
+const { groupBy } = require("lodash");
 
 module.exports = {
     name: 'attacks',
@@ -11,52 +12,58 @@ module.exports = {
             const db = await mongoUtil.db("Clan");
             const collection = db.collection("Matches");
 
-            const attacksLeftObj = await getAttacksLeft();
-            const attacksCompleted = attacksLeftObj.remainingAttacks.filter(p => p.attacksLeft === 0);
-            const noMatchesCompleted = attacksLeftObj.totalWins + attacksLeftObj.totalLosses === 0;
-            const totalMembers = attacksCompleted.length;
+            const matches = await collection.find({}).toArray();
+            const groupedMatches = groupBy(matches, m => m.tag);
 
-            for(const p of attacksCompleted){
-                const matches = await collection.find({tag: p.tag}).toArray();
+            const secondsInADay = 86400;
 
-                if(matches.length === 0) continue; //continue if no matches for player in DB
+            const playersWithAttacksFinished = [];
 
-                let mostRecentMatch = new Date();
-                mostRecentMatch.setUTCDate(mostRecentMatch.getUTCDate() - 1000);
+            for(const tag in groupedMatches){
+                let matchCount = 0;
+                let mostRecentMatch = Infinity;
 
-                for(const m of matches){
-                    const date = parseDate(m.battleTime);
-                    if(date > mostRecentMatch) mostRecentMatch = date;
+                for(const m of groupedMatches[tag]){
+                    const diffSecs = getSecsDiff(m.battleTime);
+
+                    if(diffSecs < secondsInADay){
+                        if(diffSecs < mostRecentMatch) mostRecentMatch = diffSecs;
+                        if(m.type === 'duel') matchCount += m.matchCount;
+                        else matchCount++;
+                    }
                 }
 
-                p.minsSinceLastAttack = getMinsDiff(mostRecentMatch);
+                let str = '';
+                //format most recent match string
+                if(mostRecentMatch !== Infinity){
+                    const days = Math.floor(mostRecentMatch / 86400);
+                    const hours = Math.floor((mostRecentMatch - (days * 86400)) / 3600);
+                    const mins = Math.floor((mostRecentMatch - (days * 86400) - (hours * 3600)) / 60);
+
+                    if(days) str += `${days}d `;
+                    if(hours) str += `${hours}h `;
+                    if(mins) str += `${mins}m`;
+                }
+
+                if(matchCount >= 4) playersWithAttacksFinished.push({name: groupedMatches[tag][groupedMatches[tag].length - 1].name, secs: mostRecentMatch, timeStr: str});
             }
 
-            //sort by mins since last attack in ascending order
-            attacksCompleted.sort((a, b) => {return a.minsSinceLastAttack - b.minsSinceLastAttack});
+            playersWithAttacksFinished.sort((a,b) => {
+                return a.secs - b.secs;
+            });
 
-            const desc = () => {
-                if(!totalMembers) return 'No players have completed their attacks yet!'
-
-                const lessThan60MinsAgo = attacksCompleted.filter(m => m.minsSinceLastAttack < 60).map(m => `\n•⭐ **${m.name}** (${m.minsSinceLastAttack%60}m)`).join('');
-                const moreThan60MinsAgo = attacksCompleted.filter(m => m.minsSinceLastAttack >= 60).map(m => `\n•⭐ **${m.name}** (${Math.floor(m.minsSinceLastAttack/60)}h ${m.minsSinceLastAttack%60}m)`).join('');
-                let desc = `**Total Members**: ${totalMembers}\n`;
-
-                if(lessThan60MinsAgo.length > 0) desc += lessThan60MinsAgo;
-                if(moreThan60MinsAgo.length > 0) desc += moreThan60MinsAgo;
-
-                return desc;
-            };
+            const playerCount = playersWithAttacksFinished.length;
+            const desc = `Total Players: **${playerCount}**\n` + playersWithAttacksFinished.map(p => `\n• **${p.name}**: ${p.timeStr}`).join('');
 
             const attacksEmbed = {
+                title: '__Completed War Attacks (Last 24 hrs.)__',
                 color: hex,
-                title: totalMembers ? '__Completed War Attacks__' : null,
-                thumbnail: {
-                    url: totalMembers ? logo : null
-                },
-                description: desc(),
+                description: desc,
                 footer: {
-                    text: noMatchesCompleted ? null : LUFooter()
+                    text: LUFooter()
+                },
+                thumbnail: {
+                    url: logo
                 }
             }
 

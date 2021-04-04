@@ -37,7 +37,7 @@ module.exports = {
 
         const confirmationEmbed = {
             color: hex,
-            description: `✅ Request sent for **${player.name}**! A staff member will DM you shortly.`
+            description: `✅ Request sent for **${player.name}**! A Co-Leader will DM you shortly.`
         };
 
         message.channel.send({ embed: confirmationEmbed });
