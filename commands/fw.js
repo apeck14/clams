@@ -7,7 +7,7 @@ const { serverEmojis } = require("../util/serverUtil");
 module.exports = {
     name: 'fw',
     execute: async (message, arg) => {
-        if(!isColosseumWeek()) return message.channel.send(new MessageEmbed().setColor(hex).setDescription("This command is only available during **Colosseum** week!"));
+        if(!await isColosseumWeek()) return message.channel.send(new MessageEmbed().setColor(hex).setDescription("This command is only available during **Colosseum** week!"));
 
         const colWeek = await request(`https://proxy.royaleapi.dev/v1/clans/%23${tag}/currentriverrace`);
         const clansByFame = colWeek.clans.sort((a, b) => b.fame - a.fame).map(c => ({name: c.name, tag: c.tag, fame: c.fame}));
