@@ -3,7 +3,7 @@ const fs = require('fs');
 const { CronJob } = require('cron');
 const mongoUtil = require('./util/mongoUtil');
 const { getMembers, tag, updateWarMatches, isColosseumWeek, isRaceDay, name, hex, logo } = require('./util/clanUtil');
-const { prefix, token } = require('./config.json');
+const { prefix } = require('./config.json');
 const { request, sortArrByDate, getMinsDiff } = require('./util/otherUtil');
 const { clanLogChannelID, missedAttacksChannelID, createAttacksEmbed, adminChannelID, applyChannelID, commandsChannelID } = require('./util/serverUtil');
 const { setLastUpdated } = require('./util/lastUpdatedUtil');
@@ -156,4 +156,4 @@ bot.on('reconnecting', () => {
     console.log('Clams is reconnecting...');
 });
 
-bot.login(token);
+bot.login(process.env.token);
