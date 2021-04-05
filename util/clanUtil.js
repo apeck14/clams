@@ -6,7 +6,7 @@ const clanUtil = {
     tag: "V2GQU",
     logo: "https://cdn.royaleapi.com/static/img/badge/legendary-1/A_Char_Goblin_01.png?t=df40fd13c",
     hex: "#8ad67d",
-    warWeeks: 5, //change monthly depending on amount of weeks
+    warWeeks: 4, //change monthly depending on amount of weeks
     getMembers: async (tag = clanUtil.tag, tagsOnly = false, namesOnly = false) => {
         try {
             tag = (tag[0] === `#`) ? tag.substr(1) : tag;
