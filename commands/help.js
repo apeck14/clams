@@ -8,7 +8,7 @@ module.exports = {
         {name: "attacks <C>", desc: "Get list of players with remaining war attacks", main: true},
         {name: "player <TAG>", desc: "Get information about a player", main: true},
         {name: 'lb <FULL>', desc: 'Get war leaderboard', main: true},
-        {name: 'fw', desc: 'Get current Colosseum information', main: true},
+        {name: 'race', desc: 'Get current river race/colosseum war stats', main: true},
         {name: 'apply <TAG>', desc: 'Apply to join the Clams', main: false},
         {name: 'decks <TAG>', desc: "Get the best war decks based on a player's card levels", main: true}
       ];

@@ -1,13 +1,13 @@
 const { MessageEmbed } = require("discord.js")
-const { isColosseumWeek, hex, tag, getAttacksLeft, name, logo } = require("../util/clanUtil");
+const { isColosseumWeek, hex, tag, getAttacksLeft, name, logo, isRaceDay } = require("../util/clanUtil");
 const { LUFooter } = require("../util/lastUpdatedUtil");
 const { request, mostRecentWarReset } = require("../util/otherUtil");
 const { serverEmojis } = require("../util/serverUtil");
 
 module.exports = {
-    name: 'fw',
-    execute: async (message, arg) => {
-        if(!await isColosseumWeek()) return message.channel.send(new MessageEmbed().setColor(hex).setDescription("This command is only available during **Colosseum** week!"));
+    name: 'race',
+    execute: async (message) => {
+        if(!await isRaceDay() && !await isColosseumWeek()) return message.channel.send(new MessageEmbed().setColor(hex).setDescription("This command is only available during **race days** and **Colosseum** week!"));
 
         const colWeek = await request(`https://proxy.royaleapi.dev/v1/clans/%23${tag}/currentriverrace`);
         const clansByFame = colWeek.clans.sort((a, b) => b.fame - a.fame).map(c => ({name: c.name, tag: c.tag, fame: c.fame}));
@@ -44,9 +44,6 @@ module.exports = {
                 text: LUFooter()
             }
         }
-
-        //log for bugs
-        if(arg.toLowerCase() === 'log') clansAttacksLeftObj.forEach(c => console.dir(c));
 
         message.channel.send({ embed: fwEmbed });
 
