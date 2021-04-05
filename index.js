@@ -3,7 +3,7 @@ const fs = require('fs');
 const { CronJob } = require('cron');
 const mongoUtil = require('./util/mongoUtil');
 const { getMembers, tag, updateWarMatches, isColosseumWeek, isRaceDay, name, hex, logo } = require('./util/clanUtil');
-const { prefix } = require('./config.json');
+const { prefix, token } = require('./config.json');
 const { request, sortArrByDate, getMinsDiff } = require('./util/otherUtil');
 const { clanLogChannelID, missedAttacksChannelID, createAttacksEmbed, adminChannelID, applyChannelID, commandsChannelID } = require('./util/serverUtil');
 const { setLastUpdated } = require('./util/lastUpdatedUtil');
@@ -40,14 +40,14 @@ bot.once('ready', async () => {
 
     missedAttacksJob.start();
 
-    const mins = 5; //mins to update matches
+    const mins = 3; //mins to update matches
     const interval = mins * 60 * 1000;
     const db = await mongoUtil.db("Clan");
     
     setInterval(async () => {
-        //colosseum week
-        if(await isColosseumWeek()){
-            console.log('Updating matches...(colosseum)');
+        //colosseum week or race day
+        if(await isRaceDay() || await isColosseumWeek()){
+            console.log('Updating matches...(colosseum/race)');
 
             const rr = await request(`https://proxy.royaleapi.dev/v1/clans/%23${tag}/currentriverrace`);
             const clans = rr.clans.map(c => c.tag); //all river race clans
@@ -57,13 +57,6 @@ bot.once('ready', async () => {
                 const members = await getMembers(c);
                 await updateWarMatches(members, c);
             }
-        }
-        //race day (non-colosseum)
-        else if(await isRaceDay()){
-            console.log("Updating matches...(race)");
-
-            const members = await getMembers();
-            await updateWarMatches(members);
         }
         //non-race and non-colosseum
         else{
@@ -163,4 +156,4 @@ bot.on('reconnecting', () => {
     console.log('Clams is reconnecting...');
 });
 
-bot.login(process.env.token);
+bot.login(token);
