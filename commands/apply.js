@@ -18,7 +18,7 @@ module.exports = {
             const lvl13Cards = player.cards.filter(c => c.maxLevel - c.level === 0).length;
             const lvl12Cards = player.cards.filter(c => c.maxLevel - c.level === 1).length;
             const lvl11Cards = player.cards.filter(c => c.maxLevel - c.level === 2).length;
-            const medianClamsRating = median(await playerRating(await getMembers(tag, true)));
+            const medianClamsRating = median(await playerRating(await getMembers(tag, true))).toFixed(0);
 
             const top = `Name: **${player.name}**\nTag: **${player.tag}**\nClan: **${player.clan}**\n\n**Lvl.**: ${player.level}\n**Player Rating**: ${player.rating.toFixed(0)}\n**Avg. Clams Rating**: ${medianClamsRating}\n\n`;
             const mid = `**__Stats__**\n**PB**: ${player.pb}\n**War Wins**: ${player.warWins}\n**Most Chall. Wins**: ${player.mostChallWins}\n**Classic Chall. Wins**: ${player.challWins}\n**Grand Chall. Wins**: ${player.grandChallWins}\n\n`;

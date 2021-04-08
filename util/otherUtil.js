@@ -38,7 +38,7 @@ const otherUtil = {
         if (date.getUTCHours() < 10)
             date.setUTCDate(date.getUTCDate() - 1);
 
-        date.setUTCHours(10, 0, 0, 0);
+        date.setUTCHours(9, 54, 0, 0);
 
         return date;
     },
