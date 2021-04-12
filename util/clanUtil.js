@@ -158,34 +158,25 @@ const clanUtil = {
             const db = await mongoUtil.db("Clan");
             const collection = clanTag === clanUtil.tag ? db.collection('Matches') : db.collection('Opp Matches');
 
-            const [members, matches] = await Promise.all([clanUtil.getMembers(clanTag), collection.find({clanTag: '#'+clanTag}).toArray()]);
-            const memberTags = members.map(m => m.tag);
+            const todaysParticipants = (await request(`https://proxy.royaleapi.dev/v1/clans/%23${clanTag}/currentriverrace`)).clan.participants.map(p => ({name: p.name, tag: p.tag, attacksLeft: 4 - p.decksUsedToday}));
 
-            const membersWhoLeftMidWar = [];
+            const matches = await collection.find({clanTag: '#'+clanTag}).toArray();
 
             const attacksUsed = {
                 totalWins: 0,
                 totalLosses: 0,
-                remainingAttacks: members.map(m => ({name: m.name, tag: m.tag, attacksLeft: 4}))
+                remainingAttacks: todaysParticipants,
+                attacksLeft: 200 - todaysParticipants.reduce((a,b) => a + (4 - b.attacksLeft), 0)
             };
             
             //loop through all matches in DB
             for(const m of matches){
                 if(!isBetweenDates(m.battleTime, startTime, endTime)) continue;
-                if(memberTags.indexOf(m.tag) === -1 && membersWhoLeftMidWar.indexOf(m.tag) === -1) membersWhoLeftMidWar.push(m.tag);
 
-                const player = attacksUsed.remainingAttacks.find(p => p.tag === m.tag);
-
-                if(m.type === 'boat') {
-                    if(player) player.attacksLeft -= 1;
-                }
-                else if(m.type === 'battle'){
-                    if(player) player.attacksLeft -= 1;
+                if(m.type === 'battle'){
                     (m.won) ? attacksUsed.totalWins++ : attacksUsed.totalLosses++;
                 }
                 else if(m.type === 'duel'){
-                    if(player) player.attacksLeft -= m.matchCount;
-
                     if(m.matchCount === 2) (m.won) ? attacksUsed.totalWins += 2 : attacksUsed.totalLosses += 2;
                     else{
                         if(m.won === 'N/A'){
@@ -203,40 +194,6 @@ const clanUtil = {
                     }
                 }
                 
-            }
-
-            //200 - attacks used by current members, 4 * amount of players no longer in clan with used attack today
-            const atksLeft = () => {
-                const atksUsed = attacksUsed.remainingAttacks.map(p => 4 - p.attacksLeft).reduce((a, b) => a + b, 0);
-                let attacksLeft = 200;
-
-                attacksLeft -= 4 * membersWhoLeftMidWar.length;
-                attacksLeft -= atksUsed;
-
-                return attacksLeft;
-            };
-
-            attacksUsed.attacksLeft = atksLeft();
-
-            //check if anyone with 4 attacks is new, if so check their recent matches and see if they have any attacks left
-            for(const mem of attacksUsed.remainingAttacks){
-                if(mem.attacksLeft === 4){
-                    const matchesInDB = await collection.find({tag: mem.tag}).count();
-                    
-                    if(!matchesInDB){
-                        const battleLog = await request(`https://proxy.royaleapi.dev/v1/players/%23${mem.tag.substr(1)}/battlelog`, true);
-
-                        for(const b of battleLog){
-                            if(b.type !== 'riverRacePvP' && b.type !== 'riverRaceDuel' && b.type !== 'boatBattle') continue; //non war match
-                            else if(b.type === 'boatBattle' && b.boatBattleSide === 'defender') continue; //defensive boat battle
-                            else if(!isBetweenDates(b.battleTime, startTime, endTime)) continue;
-
-                            //if war match was done today, but in a different clan
-                            if(b.team[0].clan.tag !== '#'+clanUtil.tag)
-                                mem.attacksLeft = 0;
-                        }
-                    }
-                }
             }
 
             return attacksUsed;

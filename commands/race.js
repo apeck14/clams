@@ -16,6 +16,8 @@ module.exports = {
         const clanPromises = clansByFame.map(c => getAttacksLeft(mostRecentWarReset(), new Date(), c.tag));
         const clansAttacksLeftObj = await Promise.all(clanPromises);
 
+        console.log(clansAttacksLeftObj[0]);
+
         const desc = async () => {
             let desc = '';
 
