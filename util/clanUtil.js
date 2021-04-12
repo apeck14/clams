@@ -158,7 +158,10 @@ const clanUtil = {
             const db = await mongoUtil.db("Clan");
             const collection = clanTag === clanUtil.tag ? db.collection('Matches') : db.collection('Opp Matches');
 
-            const todaysParticipants = (await request(`https://proxy.royaleapi.dev/v1/clans/%23${clanTag}/currentriverrace`)).clan.participants.map(p => ({name: p.name, tag: p.tag, attacksLeft: 4 - p.decksUsedToday}));
+            const members = await clanUtil.getMembers(clanTag, true);
+
+            let todaysParticipants = (await request(`https://proxy.royaleapi.dev/v1/clans/%23${clanTag}/currentriverrace`)).clan.participants.map(p => ({name: p.name, tag: p.tag, attacksLeft: 4 - p.decksUsedToday}));
+            todaysParticipants = todaysParticipants.filter(p => members.indexOf(p.tag) !== -1);
 
             const matches = await collection.find({clanTag: '#'+clanTag}).toArray();
 
