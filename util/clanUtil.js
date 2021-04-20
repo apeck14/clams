@@ -169,7 +169,7 @@ const clanUtil = {
                 totalWins: 0,
                 totalLosses: 0,
                 remainingAttacks: todaysParticipants,
-                attacksLeft: 200 - todaysParticipants.reduce((a,b) => a + (4 - b.attacksLeft), 0)
+                attacksLeft: todaysParticipants.reduce((a,b) => a + b.attacksLeft, 0)
             };
             
             //loop through all matches in DB
