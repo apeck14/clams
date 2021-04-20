@@ -9,12 +9,12 @@ module.exports = {
     execute: async (message, arg, bot) => {
         arg = (arg[0] === '#') ? arg.substr(1) : arg;
 
-        message.channel.startTyping();
-
         const player = await request(`https://proxy.royaleapi.dev/v1/players/%23${arg}`);
         if(!player) return message.channel.send(new MessageEmbed().setColor(clanUtil.hex).setDescription('Invalid tag, or unexpected error.'));
         const name = player.name;
         const cards = player.cards.map(c => ({name: c.name.toLowerCase().replace(/ /g, '-'), level: 13 - (c.maxLevel - c.level), png: c.iconUrls.medium}));
+
+        message.channel.startTyping();
 
         const url = (cardsToInclude) => {
             let url = `https://royaleapi.com/decks/popular?time=14d&sort=win&size=10&players=PvP&min_trophies=5600&max_trophies=10000&min_elixir=1&max_elixir=9&mode=detail&type=Ladder`;
