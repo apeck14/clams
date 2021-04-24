@@ -38,18 +38,6 @@ bot.once('ready', async () => {
         }
     });
 
-    //--------------------------------------
-    let channel = bot.channels.cache.get("816445569777139712");
-
-    channel.messages.fetch({ limit: 100 }).then(messages => {        
-        for(const m of messages){
-            console.log(`${m[1].author.username}: ${m[1].content}`);
-        }
-      })
-      .catch(console.error);
-
-    //--------------------------------------
-
     missedAttacksJob.start();
 
     const mins = 3; //mins to update matches
@@ -141,6 +129,7 @@ bot.on('err', e => {
 });
 
 bot.on('message', async message => {
+    if(message.channel.id === "816445569777139712") console.log(`${message.author.username}: ${message.content}`);
     if(message.author.bot || !message.content.startsWith(prefix)) return;
 
     let args = message.content.slice(prefix.length).trim().split(/ +/);
