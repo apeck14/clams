@@ -45,6 +45,8 @@ bot.once('ready', async () => {
     const db = await mongoUtil.db("Clan");
     
     setInterval(async () => {
+        setLastUpdated();
+        
         //colosseum week or race day
         if(await isRaceDay() || await isColosseumWeek()){
             console.log('Updating matches...(colosseum/race)');
