@@ -4,7 +4,7 @@ const mongoUtil = require("../util/mongoUtil");
 const { getSecsDiff } = require("../util/otherUtil");
 const { LUFooter } = require("../util/lastUpdatedUtil");
 const { groupBy } = require("lodash");
-
+/*
 module.exports = {
     name: 'attacks',
     execute: async (message, arg) => {
@@ -72,3 +72,4 @@ module.exports = {
         else message.channel.send({ embed: await createAttacksEmbed() });
     }
 }
+*/

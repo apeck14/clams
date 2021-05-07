@@ -37,7 +37,7 @@ bot.once('ready', async () => {
             name: '?help'
         }
     });
-
+/*
     missedAttacksJob.start();
 
     const mins = 3; //mins to update matches
@@ -118,6 +118,7 @@ bot.once('ready', async () => {
 
         setLastUpdated();
     }, interval);
+    */
 });
 
 // -------------------------------------------------------------------

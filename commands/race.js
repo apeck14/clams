@@ -3,7 +3,7 @@ const { isColosseumWeek, hex, tag, getAttacksLeft, name, logo, isRaceDay } = req
 const { LUFooter } = require("../util/lastUpdatedUtil");
 const { request, mostRecentWarReset } = require("../util/otherUtil");
 const { serverEmojis } = require("../util/serverUtil");
-
+/*
 module.exports = {
     name: 'race',
     execute: async (message) => {
@@ -49,3 +49,4 @@ module.exports = {
 
     }
 }
+*/
