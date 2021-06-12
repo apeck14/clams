@@ -18,15 +18,6 @@ for(const file of commandFiles){
     bot.commands.set(command.name, command);
 }
 
-// ----------------------- JOBS --------------------------------------
-//send embed for who missed attacks everyday at 4:50 am
-const missedAttacksJob = new CronJob('0 50 4 * * *', async () => {
-    const members = await getMembers();
-    await updateWarMatches(members);
-
-    bot.channels.cache.get(missedAttacksChannelID).send({ embed: await createAttacksEmbed()});
-}, null, true, 'America/Chicago');
-
 // --------------------- MAIN ----------------------------------------
 
 bot.once('ready', async () => {
@@ -37,88 +28,6 @@ bot.once('ready', async () => {
             name: '?help'
         }
     });
-/*
-    missedAttacksJob.start();
-
-    const mins = 3; //mins to update matches
-    const interval = mins * 60 * 1000;
-    const db = await mongoUtil.db("Clan");
-    
-    setInterval(async () => {
-        setLastUpdated();
-        
-        //colosseum week or race day
-        if(await isRaceDay() || await isColosseumWeek()){
-            console.log('Updating matches...(colosseum/race)');
-
-            const rr = await request(`https://proxy.royaleapi.dev/v1/clans/%23${tag}/currentriverrace`);
-            const clans = rr.clans.map(c => c.tag); //all river race clans
-
-            //update matches for all clans in river race
-            for(const c of clans){
-                const members = await getMembers(c);
-                await updateWarMatches(members, c);
-            }
-        }
-        //non-race and non-colosseum
-        else{
-            console.log("Updating matches...");
-
-            const races = db.collection("Races");
-            const rr = await request(`https://proxy.royaleapi.dev/v1/clans/%23${tag}/currentriverrace`);
-            const log = await request(`https://proxy.royaleapi.dev/v1/clans/%23${tag}/riverracelog`);
-            const startTime = `${log.items[0].createdDate.substr(0,9)}100000.000Z`;
-            const finishTime = rr.clan.finishTime;
-
-            const finishedClans = rr.clans.filter(c => c.finishTime);
-            const place = sortArrByDate(finishedClans, 'finishTime').map(c => c.tag).indexOf("#"+tag) + 1;
-
-            const race = {"clan": `${name}`, "place": place, "startTime": startTime, "finishTime": finishTime};
-            const raceExists = await races.findOne(race);
-
-            //if race not in DB
-            if(!raceExists){
-                console.log("------- NEW RACE ADDED -------");
-                console.dir(race);
-                console.log("------------------------------");
-
-                races.insertOne(race);
-
-                const desc = () => {
-                    const diffMins = getMinsDiff(startTime, finishTime);
-                    const timeToComplete = `${Math.floor(diffMins/60)}h ${diffMins % 60}m`;
-                    let desc = "";
-
-                    //add place to desc
-                    if(place === 1) desc += "Place: :first_place:\n";
-                    else if(place === 2) desc += "Place: :second_place:\n";
-                    else if(place === 3) desc += "Place: :third_place:\n";
-                    else desc += `Place: **${place}th**\n`;
-
-                    //add time took to complete race
-                    desc += `Time: **${timeToComplete}**\n`;
-
-                    return desc;
-                };
-
-                const raceEmbed = {
-                    color: hex,
-                    title: 'Race Finished!',
-                    thumbnail: {
-                        url: logo
-                    },
-                    description: desc()
-                }
-
-                bot.channels.cache.get(clanLogChannelID).send({ embed: raceEmbed });
-            }
-
-            await updateWarMatches(await getMembers());
-        }
-
-        setLastUpdated();
-    }, interval);
-    */
 });
 
 // -------------------------------------------------------------------
