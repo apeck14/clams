@@ -5,10 +5,8 @@ module.exports = {
     description: 'get list of commands',
     execute(message) {
       const commands = [
-        {name: "attacks <C>", desc: "Get list of players with remaining war attacks", main: true},
         {name: "player <TAG>", desc: "Get information about a player", main: true},
         {name: 'lb <FULL>', desc: 'Get war leaderboard', main: true},
-        {name: 'race', desc: 'Get current river race/colosseum war stats', main: true},
         {name: 'apply <TAG>', desc: 'Apply to join the Clams', main: false}
       ];
   
