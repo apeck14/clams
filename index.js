@@ -18,6 +18,7 @@ for(const file of commandFiles){
     bot.commands.set(command.name, command);
 }
 
+
 // --------------------- MAIN ----------------------------------------
 
 bot.once('ready', async () => {
