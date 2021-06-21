@@ -6,7 +6,6 @@ module.exports = {
     execute(message) {
       const commands = [
         {name: "player <TAG>", desc: "Get information about a player", main: true},
-        {name: 'lb <FULL>', desc: 'Get war leaderboard', main: true},
         {name: 'apply <TAG>', desc: 'Apply to join the Clams', main: false}
       ];
   

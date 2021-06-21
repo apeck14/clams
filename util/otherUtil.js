@@ -17,12 +17,19 @@ const otherUtil = {
             console.log(`Error (parseDate): ${date}`);
         }
     },
-    request: async (url, incrementToken = false) => {
+    /**
+     * Make a Clash Royale API request
+     * @param {*} url - API URL to request date from
+     * @param {*} incrementToken - increment API token in API_KEY class
+     * @param {*} voidConsoleOutput - void console.log if certain error response from API
+     * @returns {Object} - data from API
+     */
+     request: async (url, incrementToken = false) => {
         try {
             const req = await axios.get(url, { headers : { 'Authorization': 'Bearer ' + API_KEY.token(incrementToken) } });
             return req.data || req;
         } catch (e) {
-            console.error(e);
+            console.error(e.response.statusText || e.response || e);
         }
     },
     isBetweenDates: (date, startDate, endDate) => {
