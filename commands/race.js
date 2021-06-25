@@ -20,9 +20,9 @@ module.exports = {
             for (let i = 0; i < clans.length; i++) {
                 const c = clans[i];
                 if (c.name === 'Clash of Clams')
-                    str += `__**${i+1}. ${c.name}**__\n${serverEmojis.find(e => e.name === "fame").input} **${c.medals}**\nAtks. Used: **${c.attacksUsedToday}**\nAvg. Fame: **${(c.medals/c.attacksUsedToday).toFixed(1)}**\n\n`;
+                    str += `__**${i+1}. ${c.name}**__\n${serverEmojis.find(e => e.name === "fame").input} **${c.medals}**\nAtks. Left: **${200 - c.attacksUsedToday}**\nAvg. Fame: **${(c.medals/c.attacksUsedToday).toFixed(1)}**\n\n`;
                 else
-                    str += `**${i+1}. ${c.name}**\n${serverEmojis.find(e => e.name === "fame").input} **${c.medals}**\nAtks. Used: **${c.attacksUsedToday}**\nAvg. Fame: **${(c.medals/c.attacksUsedToday).toFixed(1)}**\n\n`;
+                    str += `**${i+1}. ${c.name}**\n${serverEmojis.find(e => e.name === "fame").input} **${c.medals}**\nAtks. Left: **${200 - c.attacksUsedToday}**\nAvg. Fame: **${(c.medals/c.attacksUsedToday).toFixed(1)}**\n\n`;
             }
 
             return str;
