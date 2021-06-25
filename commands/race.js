@@ -1,4 +1,4 @@
-const { logo, tag } = require("../util/clanUtil");
+const { logo, tag, hex } = require("../util/clanUtil");
 const { request } = require("../util/otherUtil");
 const { serverEmojis } = require("../util/serverUtil");
 
