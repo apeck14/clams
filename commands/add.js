@@ -59,7 +59,7 @@ module.exports = {
             });
 
             for (const e of reactionEmojis) await memEmbed.react(e);
-            const emojiCollector = await memEmbed.awaitReactions((r, u) => u.id === message.author.id && reactionEmojis.includes(r.emoji.name), { max: 1, time: 30000 });
+            const emojiCollector = await memEmbed.awaitReactions((r, u) => u.id === message.author.id && reactionEmojis.includes(r.emoji.name), { max: 1 });
             const firstReact = emojiCollector.first();
 
             //check reaction
