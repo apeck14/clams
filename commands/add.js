@@ -7,7 +7,7 @@ module.exports = {
     name: 'add',
     execute: async (message) => {
         const rr = await request(`https://proxy.royaleapi.dev/v1/clans/%23${tag}/currentriverrace`);
-        const members = rr.clans.find(c => c.name === "Clash of Clams").participants.filter(p => p.decksUsed >= 16).reverse();
+        const members = rr.clans.find(c => c.name === "Clash of Clams").participants.filter(p => p.decksUsed >= 16 && p.boatAttacks === 0).reverse();
         const promptEmojis = ['✅', '❌'];
         const reactionEmojis = ['✅', '❌', '⏭️'];
 
@@ -42,7 +42,7 @@ module.exports = {
 
         // SEND PLAYER EMBEDS W/ REACTIONS ------------------------------------------------------------
         for (const m of members) {
-            const { tag, name, fame, repairPoints, boatAttacks, decksUsed, decksUsedToday } = m;
+            const { tag, name, fame, decksUsed, decksUsedToday } = m;
 
             const memEmbed = await message.channel.send({
                 embed: {
@@ -51,7 +51,7 @@ module.exports = {
                     thumbnail: {
                         url: logo
                     },
-                    description: `${serverEmojis.find(e => e.name === 'fame').input}**${fame}**\n\nDecks Used: **${decksUsed}**/28\nDecks Used Today: **${decksUsedToday}**/4\n\nRepair Points: **${repairPoints}**\nBoat Attacks: **${boatAttacks}**`,
+                    description: `${serverEmojis.find(e => e.name === 'fame').input}**${fame}**\n\nDecks Used: **${decksUsed}**/28\nDecks Used Today: **${decksUsedToday}**/4`,
                     footer: {
                         text: `${members.indexOf(members.find(p => p.tag === tag)) + 1} of ${members.length}`
                     }
