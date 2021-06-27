@@ -6,8 +6,6 @@ const { serverEmojis } = require("../util/serverUtil");
 module.exports = {
     name: 'add',
     execute: async (message) => {
-        if (message.channel.id !== '858600077710721074') return;
-
         const rr = await request(`https://proxy.royaleapi.dev/v1/clans/%23${tag}/currentriverrace`);
         const members = rr.clans.find(c => c.name === "Clash of Clams").participants.filter(p => p.decksUsed >= 16).reverse();
         const reactionEmojis = ['✅', '❌'];
