@@ -8,7 +8,8 @@ module.exports = {
     execute: async (message) => {
         const rr = await request(`https://proxy.royaleapi.dev/v1/clans/%23${tag}/currentriverrace`);
         const members = rr.clans.find(c => c.name === "Clash of Clams").participants.filter(p => p.decksUsed >= 16).reverse();
-        const reactionEmojis = ['✅', '❌'];
+        const promptEmojis = ['✅', '❌'];
+        const reactionEmojis = ['✅', '❌', '⏭️'];
 
         // SEND PROMPT W/ REACTIONS -------------------------------------------------------------------
         const promptEmbed = await message.channel.send({
@@ -18,8 +19,8 @@ module.exports = {
             }
         });
 
-        for (const e of reactionEmojis) await promptEmbed.react(e);
-        const emojiCllctr = await promptEmbed.awaitReactions((r, u) => u.id === message.author.id && reactionEmojis.includes(r.emoji.name), { max: 1, time: 30000 });
+        for (const e of promptEmojis) await promptEmbed.react(e);
+        const emojiCllctr = await promptEmbed.awaitReactions((r, u) => u.id === message.author.id && promptEmojis.includes(r.emoji.name), { max: 1, time: 30000 });
         const firstReaction = emojiCllctr.first();
         let isColWeek;
 
@@ -65,6 +66,10 @@ module.exports = {
             if (!firstReact || firstReact._emoji.name === '❌') {
                 memEmbed.delete();
                 await message.channel.send(`❌ **${name}** (${tag}): ${serverEmojis.find(e => e.name === 'fame').input}${fame}`)
+            }
+            else if (firstReact._emoji.name === '⏭️') {
+                memEmbed.delete();
+                return await message.channel.send(`⏭️ Skipped **${members.length - members.indexOf(m)}** member(s)!`);
             }
             else {
                 const db = await mongoUtil.db("Clams");
