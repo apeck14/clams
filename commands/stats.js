@@ -13,7 +13,7 @@ module.exports = {
             if(linkedAccount) arg = linkedAccount.tag;
             else return message.channel.send({embed: {color: hex, description: 'You must give a player tag! (?stats #ABC123)'}});
         }
-        arg = (arg[0] !== '#') ? `#${arg}` : arg;
+        arg = (arg[0] !== '#') ? `#${arg.toUpperCase()}` : arg.toUpperCase();
 
         const average = arr => {
             let sum = 0;
