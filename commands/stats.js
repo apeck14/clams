@@ -4,11 +4,16 @@ const mongoUtil = require("../util/mongoUtil");
 module.exports = {
     name: 'stats',
     execute: async (message, arg) => {
-        if(!arg) return message.channel.send({embed: {color: hex, description: 'You must give a player tag! (?stats #ABC123)'}});
-        arg = (arg[0] !== '#') ? `#${arg}` : arg;
-
         const db = await mongoUtil.db("Clams");
         const collection = db.collection("Players");
+        const linkedCollection = db.collection('Linked Accounts');
+
+        if(!arg) {
+            const linkedAccount = await linkedCollection.findOne({discordID: message.author.id});
+            if(linkedAccount) arg = linkedAccount.tag;
+            else return message.channel.send({embed: {color: hex, description: 'You must give a player tag! (?stats #ABC123)'}});
+        }
+        arg = (arg[0] !== '#') ? `#${arg}` : arg;
 
         const average = arr => {
             let sum = 0;
