@@ -31,7 +31,7 @@ module.exports = {
             data: {
                 labels: player.fameTotals.map((f, i) => (`${i}`)),
                 datasets: [
-                    { label: 'Fame', data: player.fameTotals, fill: false, borderColor: 'green' }
+                    { label: 'Fame', data: player.fameTotals, fill: false, borderColor: hex }
                 ]
             },
             options: {
