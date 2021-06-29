@@ -52,7 +52,7 @@ module.exports = {
                 layout: {
                     padding: {
                         left: 0,
-                        right: 50,
+                        right: 15,
                         top: 0,
                         bottom: 0
                     }
