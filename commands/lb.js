@@ -38,7 +38,7 @@ module.exports = {
         message.channel.send({embed:
             {
                 color: hex,
-                title: `__Clams Avg. Fame Leaderboard__`,
+                title: `__Clams Avg. Fame Leaders__`,
                 description: desc(),
                 thumbnail: {
                     url: logo
