@@ -4,8 +4,8 @@ const mongoUtil = require("../util/mongoUtil");
 module.exports = {
     name: 'link',
     execute: async (message, arg) => {
-        arg = (arg[0] !== '#') ? `#${arg}` : arg;
-        if(!arg) return message.channel.send({embed: {color: hex, description: "No player tag given! (Ex: `?link #ABC123`)"}});
+        if (arg) arg = (arg[0] !== '#') ? `#${arg}` : arg;
+        if (!arg) return message.channel.send({embed: {color: hex, description: "No player tag given! (Ex: `?link #ABC123`)"}});
         
         try{
             const db = await mongoUtil.db("Clams");
