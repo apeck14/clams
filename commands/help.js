@@ -6,9 +6,11 @@ module.exports = {
     execute(message) {
       const commands = [
         {name: 'lb <FULL>', desc: 'Get Clams war leaderboard', main: true},
+        {name: 'link <TAG>', desc: 'Get current river race stats', main: true},
         {name: "player <TAG>", desc: "Get information about a player", main: true},
         {name: 'apply <TAG>', desc: 'Apply to join the Clams', main: false},
-        {name: 'race', desc: 'Get current river race stats', main: true}
+        {name: 'race', desc: 'Get current river race stats', main: true},
+        {name: 'stats <TAG>', desc: 'Get war stats of a Clams member', main: true}
       ];
   
       commands.sort((a, b) => {
