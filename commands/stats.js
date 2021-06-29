@@ -45,7 +45,8 @@ module.exports = {
                         ticks: {
                             beginAtZero: true,
                             max: 4000,
-                            stepValue: 500
+                            stepValue: 500,
+                            fontColor: "#dcdcdc"
                         }
                     }]
                 },
