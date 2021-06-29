@@ -35,6 +35,11 @@ module.exports = {
                 ]
             },
             options: {
+                legend: {
+                    labels: {
+                        fontColor: "#dcdcdc"
+                    }
+                },
                 scales: {
                     xAxes: [{
                         ticks: {
