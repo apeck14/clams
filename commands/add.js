@@ -53,9 +53,9 @@ module.exports = {
 
                 //if player not in database (new player)
                 if (!playerExists)
-                    await collection.insertOne({ name: name, tag: tag, fameTotals: [] });
-
-                await collection.updateOne({ tag: tag }, { $push: { fameTotals: parseInt(fame) } });
+                    await collection.insertOne({ name: name, tag: tag, fameTotals: [parseInt(fame)] });
+                else
+                    await collection.updateOne({ tag: tag }, { $push: { fameTotals: parseInt(fame) } });
 
                 memEmbed.delete();
                 await message.channel.send(`✅ **${name}** (${tag}): ${serverEmojis.find(e => e.name === 'fame').input}${fame}`);
