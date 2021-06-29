@@ -4,7 +4,7 @@ const { serverEmojis } = require("../util/serverUtil");
 
 module.exports = {
     name: 'lb',
-    execute: async (message) => {
+    execute: async (message, arg) => {
         const db = await mongoUtil.db("Clams");
         const collection = db.collection("Players");
 
@@ -20,11 +20,12 @@ module.exports = {
         }
 
         const leaderboard = memberStats.map(p => ({name: p.name, avgFame: average(p.fameTotals)})).sort((a, b) => b.avgFame - a.avgFame);
+        const indeces = (arg === 'full') ? leaderboard.length : 10;
 
         const desc = () => {
             let str = '';
 
-            for(let i = 0; i < 10; i++){
+            for(let i = 0; i < indeces; i++){
                 if(i === 0) str += `🥇 **${leaderboard[i].name}** (${serverEmojis.find(e => e.name === 'fame').input}${leaderboard[i].avgFame})\n`;
                 else if(i === 1) str += `🥈 **${leaderboard[i].name}** (${serverEmojis.find(e => e.name === 'fame').input}${leaderboard[i].avgFame})\n`;
                 else if(i === 2) str += `🥉 **${leaderboard[i].name}** (${serverEmojis.find(e => e.name === 'fame').input}${leaderboard[i].avgFame})\n`;
