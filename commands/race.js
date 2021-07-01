@@ -6,11 +6,12 @@ module.exports = {
     name: 'race',
     execute: async (message) => {
         const rr = await request(`https://proxy.royaleapi.dev/v1/clans/%23${tag}/currentriverrace`);
+        const score = (rr.periodType === 'colosseum') ? 'fame' : 'periodPoints';
         const clans = rr.clans
-                        .sort((a, b) => b.periodPoints - a.periodPoints)
+                        .sort((a, b) => b[score] - a[score])
                         .map(c => ({
                                 name: c.name,
-                                medals: c.periodPoints,
+                                medals: c[score],
                                 attacksUsedToday: c.participants.reduce((a, b) => a + b.decksUsedToday, 0)
                             }));
 
