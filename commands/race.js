@@ -22,7 +22,7 @@ module.exports = {
         }
         const avgFame = c => {
             if(isCololsseum){
-                if(c.attacksUsedToday === 0) return '0.0';
+                if(c.attacksUsedToday === 0 && battleDaysCompleted() === 0) return '0.0';
                 return (c.medals / (c.attacksUsedToday + (200 * battleDaysCompleted()))).toFixed(1);
             }
             else{
