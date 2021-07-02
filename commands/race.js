@@ -52,7 +52,10 @@ module.exports = {
             thumbnail: {
                 url: logo
             },
-            description: desc()
+            description: desc(),
+            footer: {
+                text: (isCololsseum) ? 'Missed attacks negatively affect avg. fame' : ''
+            }
         }
 
         message.channel.send({ embed: raceEmbed })
