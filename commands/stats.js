@@ -1,5 +1,6 @@
 const { logo, hex } = require("../util/clanUtil");
 const mongoUtil = require("../util/mongoUtil");
+const { CanvasRenderService } = require('chartjs-node-canvas');
 
 module.exports = {
     name: 'stats',
@@ -8,10 +9,10 @@ module.exports = {
         const collection = db.collection("Players");
         const linkedCollection = db.collection('Linked Accounts');
 
-        if(!arg) {
-            const linkedAccount = await linkedCollection.findOne({discordID: message.author.id});
-            if(linkedAccount) arg = linkedAccount.tag;
-            else return message.channel.send({embed: {color: hex, description: 'You must give a player tag! (?stats #ABC123)'}});
+        if (!arg) {
+            const linkedAccount = await linkedCollection.findOne({ discordID: message.author.id });
+            if (linkedAccount) arg = linkedAccount.tag;
+            else return message.channel.send({ embed: { color: hex, description: 'You must give a player tag! (?stats #ABC123)' } });
         }
         arg = (arg[0] !== '#') ? `#${arg.toUpperCase()}` : arg.toUpperCase();
 
@@ -24,53 +25,52 @@ module.exports = {
         }
 
         const player = await collection.findOne({ tag: arg });
-        if(!player) return message.channel.send({embed: {color: hex, description: 'Player not found. Try again.'}});
+        if (!player) return message.channel.send({ embed: { color: hex, description: 'Player not found. Try again.' } });
 
         const chart = {
             type: 'line',
             data: {
                 labels: player.fameTotals.map((f, i) => (`${i}`)),
-                datasets: [
-                    { label: 'Fame', data: player.fameTotals, fill: false, borderColor: hex }
-                ]
+                datasets: [{
+                    label: 'Fame',
+                    data: player.fameTotals,
+                    borderColor: hex,
+                    backgroundColor: 'rgba(137, 213, 123, 0.23)',
+                    fill: true
+                }]
             },
             options: {
-                legend: {
-                    labels: {
-                        fontColor: "#dcdcdc"
+                scales: {
+                    y: {
+                        ticks: {
+                            stepSize: 600,
+                            color: "#dcdcdc"
+                        },
+                        min: 0,
+                        max: 3600,
+                        offset: true
+                    },
+                    x: {
+                        display: false
                     }
                 },
-                scales: {
-                    xAxes: [{
-                        ticks: {
-                            display: false //remove x-axis labels
+                plugins: {
+                    legend: {
+                        labels: {
+                            color: "#dcdcdc"
                         }
-                    }],
-                    yAxes: [{
-                        ticks: {
-                            beginAtZero: true,
-                            max: 4000,
-                            stepValue: 500,
-                            fontColor: "#dcdcdc"
-                        }
-                    }]
-                },
-                layout: {
-                    padding: {
-                        left: 0,
-                        right: 15,
-                        top: 0,
-                        bottom: 0
                     }
                 }
             }
         }
-        const encodedChart = encodeURIComponent(JSON.stringify(chart));
-        const chartUrl = `https://quickchart.io/chart?c=${encodedChart}`;
+
+        const width = 500;
+        const height = 300;
+        const canvas = new CanvasRenderService(width, height);
+        const image = await canvas.renderToBuffer(chart);
 
         message.channel.send({
-            embed:
-            {
+            embed: {
                 color: hex,
                 title: `${player.name}'s Stats`,
                 description: `Avg. Fame: **${average(player.fameTotals)}**\n\n**Weeks Counted:**\n${player.fameTotals.join(', ')}`,
@@ -78,8 +78,12 @@ module.exports = {
                     url: logo
                 },
                 image: {
-                    url: chartUrl
-                }
+                    url: 'attachment://chart.png'
+                },
+                files: [{
+                    attachment: image,
+                    name: 'chart.png'
+                }]
             }
         });
 
