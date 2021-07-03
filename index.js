@@ -47,7 +47,7 @@ bot.on('message', async message => {
     try{
         message.channel.startTyping();
 
-        if((command === 'add' || command === 'insert' || command === 'delete') && message.channel.id !== '592511340736937986') return message.channel.send({embed: { color: hex, description: 'You cannot use that command here!'}});
+        if((command === 'add' || command === 'insert' || command === 'delete') && message.channel.id !== '858600077710721074') return message.channel.send({embed: { color: hex, description: 'You cannot use that command here!'}});
         else if(command === 'apply' && message.channel.id !== applyChannelID) return message.channel.send({embed: { color: hex, description: 'You cannot use that command here!'}});
         else if((command !== 'add' && command !== 'insert' && command !== 'delete' && command !== 'apply') && message.channel.id !== commandsChannelID) return message.channel.send({embed: { color: hex, description: 'You cannot use that command here!'}});
 
