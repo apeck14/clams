@@ -45,14 +45,12 @@ bot.on('message', async message => {
     if(!bot.commands.has(command)) return;
 
     try{
-        message.channel.startTyping();
-
         if((command === 'add' || command === 'insert' || command === 'delete') && message.channel.id !== '858600077710721074') return message.channel.send({embed: { color: hex, description: 'You cannot use that command here!'}});
         else if(command === 'apply' && message.channel.id !== applyChannelID) return message.channel.send({embed: { color: hex, description: 'You cannot use that command here!'}});
         else if((command !== 'add' && command !== 'insert' && command !== 'delete' && command !== 'apply') && message.channel.id !== commandsChannelID) return message.channel.send({embed: { color: hex, description: 'You cannot use that command here!'}});
-
+        
+        message.channel.startTyping();
         bot.commands.get(command).execute(message, args, bot);
-
         message.channel.stopTyping();
     } catch(err) {
         console.error(err);
