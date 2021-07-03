@@ -1,12 +1,8 @@
-const { Client, Collection, MessageEmbed } = require('discord.js');
+const { Client, Collection } = require('discord.js');
 const fs = require('fs');
-const { CronJob } = require('cron');
-const mongoUtil = require('./util/mongoUtil');
-const { getMembers, tag, updateWarMatches, isColosseumWeek, isRaceDay, name, hex, logo } = require('./util/clanUtil');
+const { hex } = require('./util/clanUtil');
 const { prefix } = require('./config.json');
-const { request, sortArrByDate, getMinsDiff } = require('./util/otherUtil');
-const { clanLogChannelID, missedAttacksChannelID, createAttacksEmbed, adminChannelID, applyChannelID, commandsChannelID } = require('./util/serverUtil');
-const { setLastUpdated } = require('./util/lastUpdatedUtil');
+const { applyChannelID, commandsChannelID } = require('./util/serverUtil');
 
 const bot = new Client();
 bot.commands = new Collection();
@@ -17,9 +13,6 @@ for(const file of commandFiles){
     const command = require(`./commands/${file}`);
     bot.commands.set(command.name, command);
 }
-
-
-// --------------------- MAIN ----------------------------------------
 
 bot.once('ready', async () => {
     console.log('Clams is online!');
@@ -42,7 +35,6 @@ bot.on('err', e => {
 });
 
 bot.on('message', async message => {
-    if(message.channel.id === "816445569777139712") console.log(`${message.author.username}: ${message.content}`);
     if(message.author.bot || !message.content.startsWith(prefix)) return;
 
     let args = message.content.slice(prefix.length).trim().split(/ +/);
@@ -55,11 +47,11 @@ bot.on('message', async message => {
     try{
         message.channel.startTyping();
 
-        if(bot.commands.get(command).adminCommand && message.channel.id === adminChannelID) bot.commands.get(command).execute(message, args, bot);
-        else if(command === 'apply' && message.channel.id === applyChannelID) bot.commands.get(command).execute(message, args, bot);
-        else if(command === 'add' && message.channel.id === '858600077710721074') bot.commands.get(command).execute(message, args, bot);
-        else if(command !== 'apply' && !bot.commands.get(command).adminCommand && message.channel.id === commandsChannelID) bot.commands.get(command).execute(message, args, bot);
-        else message.channel.send(new MessageEmbed().setColor(hex).setDescription('You cannot use that command here!'));
+        if((command === 'add' || command === 'insert' || command === 'delete') && message.channel.id !== '592511340736937986') return message.channel.send({embed: { color: hex, description: 'You cannot use that command here!'}});
+        else if(command === 'apply' && message.channel.id !== applyChannelID) return message.channel.send({embed: { color: hex, description: 'You cannot use that command here!'}});
+        else if((command !== 'add' && command !== 'insert' && command !== 'delete' && command !== 'apply') && message.channel.id !== commandsChannelID) return message.channel.send({embed: { color: hex, description: 'You cannot use that command here!'}});
+
+        bot.commands.get(command).execute(message, args, bot);
 
         message.channel.stopTyping();
     } catch(err) {
