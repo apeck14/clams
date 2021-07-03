@@ -13,7 +13,7 @@ module.exports = {
         arg = arg.toUpperCase();
         const player = await collection.findOne({tag: arg});
         if(!player) return message.channel.send({embed: {color: hex, description: 'Player not found.'}});
-        else if(fameTotals.length === 0) return message.channel.send({embed: {color: hex, description: 'Player has no data to delete.'}});
+        else if(player.fameTotals.length === 0) return message.channel.send({embed: {color: hex, description: 'Player has no data to delete.'}});
 
         const { name, fameTotals } = player;
         const mostRecentFame = fameTotals[fameTotals.length - 1];
