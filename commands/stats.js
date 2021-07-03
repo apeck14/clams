@@ -72,7 +72,7 @@ module.exports = {
         message.channel.send({
             embed: {
                 color: hex,
-                title: `${player.name}'s Stats`,
+                title: `__${player.name}'s Stats__`,
                 description: `Avg. Fame: **${average(player.fameTotals)}**\n\n**Weeks Counted:**\n${player.fameTotals.join(', ')}`,
                 thumbnail: {
                     url: logo
