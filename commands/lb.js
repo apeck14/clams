@@ -9,7 +9,7 @@ module.exports = {
         const collection = db.collection("Players");
 
         const memberTags = await getMembers(tag, true);
-        const memberStats = await collection.find({tag: {$in: memberTags}}).toArray();
+        const memberStats = await collection.find({tag: {$in: memberTags}, 'fameTotals.1': {$exists: true}}).toArray(); //members in clan currently, and have atleast 1 fame score in arr
 
         const average = arr => {
             let sum = 0;
@@ -34,17 +34,17 @@ module.exports = {
 
             return str;
         };
-
-        message.channel.send({embed:
-            {
-                color: hex,
-                title: `__Clams Avg. Fame Leaders__`,
-                description: desc(),
-                thumbnail: {
-                    url: logo
-                }
+        
+        const lbEmbed = {
+            color: hex,
+            title: `__Clams Avg. Fame Leaders__`,
+            description: desc(),
+            thumbnail: {
+                url: logo
             }
-        });
+        }
+
+        message.channel.send({embed: lbEmbed});
         
     }
 }
