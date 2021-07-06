@@ -1,8 +1,11 @@
 const { Client, Collection } = require('discord.js');
 const fs = require('fs');
-const { hex } = require('./util/clanUtil');
-const { prefix } = require('./config.json');
+const { hex, tag } = require('./util/clanUtil');
+const { prefix, token } = require('./config.json');
 const { applyChannelID, commandsChannelID } = require('./util/serverUtil');
+const { CronJob } = require('cron');
+const { request, parseDate } = require('./util/otherUtil');
+const mongoUtil = require('./util/mongoUtil');
 
 const bot = new Client();
 bot.commands = new Collection();
@@ -14,6 +17,28 @@ for(const file of commandFiles){
     bot.commands.set(command.name, command);
 }
 
+//JOBS
+//add new race data every Monday at 5:30 AM CT
+const updateRacesJob = new CronJob('0 30 5 * * 1', async () => {
+    const db = await mongoUtil.db("Clams");
+    const collection = db.collection("Races");
+
+    const log = await request(`https://proxy.royaleapi.dev/v1/clans/%23${tag}/riverracelog`);
+    const newClanWarsStartDate = parseDate('20210614T094000.000Z');
+
+    for(const w of log.items){
+        if(parseDate(w.createdDate) > newClanWarsStartDate){
+            const clams = w.standings.find(c => c.clan.tag === '#V2GQU'); //Find our clan
+            const totalFame = clams.clan.participants.reduce((a, b) => a + b.fame, 0);
+            const weekExists = await collection.findOne({date: w.createdDate});
+
+            //if not already in DB
+            if(!weekExists)
+                await collection.insertOne({date: w.createdDate, rank: clams.rank, trophyCount: clams.clan.clanScore, fame: totalFame});
+        }
+    }
+}, null, true, 'America/Chicago');
+
 bot.once('ready', async () => {
     console.log('Clams is online!');
 
@@ -22,9 +47,9 @@ bot.once('ready', async () => {
             name: '?help'
         }
     });
-});
 
-// -------------------------------------------------------------------
+    updateRacesJob.start();
+});
 
 bot.on('disconnect', () => {
     console.log('Clams has disconnected.');
