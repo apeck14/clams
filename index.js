@@ -1,7 +1,7 @@
 const { Client, Collection } = require('discord.js');
 const fs = require('fs');
 const { hex, tag } = require('./util/clanUtil');
-const { prefix, token } = require('./config.json');
+const { prefix } = require('./config.json');
 const { applyChannelID, commandsChannelID } = require('./util/serverUtil');
 const { CronJob } = require('cron');
 const { request, parseDate } = require('./util/otherUtil');
