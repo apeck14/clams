@@ -22,17 +22,17 @@ module.exports = {
         const pbRating = () => {
             /*
             100: 7500
-            80: 7000
-            60: 6500
-            40: 6000
-            20: 5500
-            0: 5000
+            80: 6900
+            60: 6300
+            40: 5700
+            20: 5100
+            0: 4500
             */
 
             if(player.pb >= 7500) return 100;
-            else if(player.pb <= 5000) return 0;
+            else if(player.pb <= 4500) return 0;
 
-            return ((player.pb - 5000) / 2500) * 100;
+            return ((player.pb - 4500) / 3000) * 100;
         }
 
         const cardsRating = () => {
@@ -67,7 +67,7 @@ module.exports = {
 
         const challRating = () => {
             /*
-            Challenges: (40%)
+            Challenges: (30%)
             GC = +50
             CC = +5
 
@@ -78,7 +78,7 @@ module.exports = {
             20: 20
             0: 0
             
-            Most Chall Wins: (60%)
+            Most Chall Wins: (70%)
             100: 20
             80: 16
             60: 12
@@ -92,7 +92,7 @@ module.exports = {
 
             if(challengesRating > 100) challengesRating = 100;
 
-            return (challengesRating * 0.4) + (mostChallWinsRating * 0.6);
+            return (challengesRating * 0.3) + (mostChallWinsRating * 0.7);
         }
 
         const cw1Rating = () => {
