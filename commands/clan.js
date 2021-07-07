@@ -159,7 +159,8 @@ module.exports = {
                 });
             })
             .catch(e => {
-                console.log(e)
+                console.log(e);
+                return message.channel.send({ embed: { color: hex, description: 'Unexpected error.' } });
             });
     }
 }
