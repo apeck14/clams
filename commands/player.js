@@ -1,11 +1,19 @@
 const { MessageEmbed } = require("discord.js");
 const { hex, getPlayerData, logo } = require("../util/clanUtil");
+const mongoUtil = require("../util/mongoUtil");
 
 module.exports = {
     name: 'player',
     execute: async (message, arg) => {
-        if(!arg) return message.channel.send(new MessageEmbed().setColor(hex).setDescription("No player tag given! (Ex: **?player #ABC123**)"));
-        arg = arg[0] === "#" ? arg.substr(1) : arg;
+        if (!arg) {
+            const db = await mongoUtil.db("Clams");
+            const linkedCollection = db.collection('Linked Accounts');
+            const linkedAccount = await linkedCollection.findOne({ discordID: message.author.id });
+
+            if (linkedAccount) arg = linkedAccount.tag;
+            else return message.channel.send({ embed: { color: hex, description: 'You must give a player tag! (?stats #ABC123)' } });
+        }
+        arg = (arg[0] !== '#') ? `#${arg.toUpperCase()}` : arg.toUpperCase();
 
         const player = await getPlayerData(arg);
         if(!player) return message.channel.send(new MessageEmbed().setDescription("Invalid player tag.").setColor(hex));

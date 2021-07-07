@@ -43,11 +43,11 @@ module.exports = {
                 scales: {
                     y: {
                         ticks: {
-                            stepSize: 600,
-                            color: "#dcdcdc"
+                            stepSize: 200,
+                            color: "white"
                         },
-                        min: 0,
-                        max: 3600,
+                        suggestedMin: 1600,
+                        suggestedMax: 3600,
                         offset: true
                     },
                     x: {
@@ -57,7 +57,7 @@ module.exports = {
                 plugins: {
                     legend: {
                         labels: {
-                            color: "#dcdcdc"
+                            color: "white"
                         }
                     }
                 }
