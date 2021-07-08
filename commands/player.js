@@ -14,7 +14,7 @@ module.exports = {
             if (linkedAccount) arg = linkedAccount.tag;
             else return message.channel.send({ embed: { color: hex, description: 'You must give a player tag! (?stats #ABC123)' } });
         }
-        arg = (arg[0] !== '#') ? `#${arg.toUpperCase()}` : arg.toUpperCase();
+        arg = (arg[0] !== '#') ? arg.toUpperCase() : arg.substr(1).toUpperCase();
 
         const player = await getPlayerData(arg);
         if (!player) return message.channel.send(new MessageEmbed().setDescription("Invalid player tag.").setColor(hex));
