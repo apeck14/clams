@@ -14,7 +14,9 @@ module.exports = {
             if (linkedAccount) arg = linkedAccount.tag;
             else return message.channel.send({ embed: { color: hex, description: 'You must give a player tag! (?stats #ABC123)' } });
         }
-        arg = (arg[0] !== '#') ? arg.toUpperCase() : arg.substr(1).toUpperCase();
+
+        arg.toUpperCase();
+        if (arg[0] === '#') arg.substr(1);
 
         const player = await getPlayerData(arg);
         if (!player) return message.channel.send(new MessageEmbed().setDescription("Invalid player tag.").setColor(hex));
@@ -104,8 +106,8 @@ module.exports = {
             20: 65
             0: 0
             */
-            if(player.warWins >= 325) return 100;
-            return player.warWins / 3.25;
+            if(player.warWins >= 350) return 100;
+            return player.warWins / 3.5;
         }
 
         const chart = {
@@ -121,9 +123,6 @@ module.exports = {
             options: {
                 scales: {
                     r: {
-                        grid: {
-                            //display: false
-                        },
                         angleLines: {
                             color: 'gray'
                         },
