@@ -5,7 +5,7 @@ module.exports = {
     description: 'get list of commands',
     execute(message) {
       const commands = [
-        {name: 'lb <FULL>', desc: 'View Clams war leaderboard', main: true},
+        {name: 'lb', desc: 'View Clams war leaderboard', main: true},
         {name: 'link <TAG>', desc: 'Link your CR account to Discord', main: true},
         {name: "player <TAG>", desc: "View information about a player", main: true},
         {name: 'apply <TAG>', desc: 'Apply to join the Clams', main: false},

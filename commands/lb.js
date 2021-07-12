@@ -4,7 +4,7 @@ const { serverEmojis } = require("../util/serverUtil");
 
 module.exports = {
     name: 'lb',
-    execute: async (message, arg) => {
+    execute: async (message) => {
         const db = await mongoUtil.db("Clams");
         const collection = db.collection("Players");
 
@@ -19,17 +19,28 @@ module.exports = {
             return (sum / arr.length).toFixed(0);
         }
 
-        const leaderboard = memberStats.map(p => ({name: p.name, avgFame: average(p.fameTotals.map(s => s.fame))})).sort((a, b) => b.avgFame - a.avgFame);
-        const indeces = (arg === 'full') ? leaderboard.length : 10;
+        const under4kLb = memberStats.map(p => ({name: p.name, avgFame: average(p.fameTotals.filter(s => s.isUnder4k).map(s => s.fame))})).filter(p => p.avgFame !== 'NaN').sort((a, b) => b.avgFame - a.avgFame);
+        const above4kLb = memberStats.map(p => ({name: p.name, avgFame: average(p.fameTotals.filter(s => !s.isUnder4k).map(s => s.fame))})).filter(p => p.avgFame !== 'NaN').sort((a, b) => b.avgFame - a.avgFame);
 
         const desc = () => {
-            let str = '';
+            let str = `__**Above ${serverEmojis.find(e => e.name === 'cwtrophy').input}4k**__\n`;
 
-            for(let i = 0; i < indeces; i++){
-                if(i === 0) str += `🥇 **${leaderboard[i].name}** (${serverEmojis.find(e => e.name === 'fame').input}${leaderboard[i].avgFame})\n`;
-                else if(i === 1) str += `🥈 **${leaderboard[i].name}** (${serverEmojis.find(e => e.name === 'fame').input}${leaderboard[i].avgFame})\n`;
-                else if(i === 2) str += `🥉 **${leaderboard[i].name}** (${serverEmojis.find(e => e.name === 'fame').input}${leaderboard[i].avgFame})\n`;
-                else str += `**${i+1}.** ${leaderboard[i].name} (${serverEmojis.find(e => e.name === 'fame').input}${leaderboard[i].avgFame})\n`;
+            //above 4k
+            for(let i = 0; i < 5; i++){
+                if(i === 0) str += `🥇 **${above4kLb[i].name}** (${serverEmojis.find(e => e.name === 'fame').input}${above4kLb[i].avgFame})\n`;
+                else if(i === 1) str += `🥈 **${above4kLb[i].name}** (${serverEmojis.find(e => e.name === 'fame').input}${above4kLb[i].avgFame})\n`;
+                else if(i === 2) str += `🥉 **${above4kLb[i].name}** (${serverEmojis.find(e => e.name === 'fame').input}${above4kLb[i].avgFame})\n`;
+                else str += `**${i+1}.** ${above4kLb[i].name} (${serverEmojis.find(e => e.name === 'fame').input}${above4kLb[i].avgFame})\n`;
+            }
+
+            str += `\n__**Below ${serverEmojis.find(e => e.name === 'cwtrophy').input}4k**__\n`;
+
+            //udner 4k
+            for(let i = 0; i < 5; i++){
+                if(i === 0) str += `🥇 **${under4kLb[i].name}** (${serverEmojis.find(e => e.name === 'fame').input}${under4kLb[i].avgFame})\n`;
+                else if(i === 1) str += `🥈 **${under4kLb[i].name}** (${serverEmojis.find(e => e.name === 'fame').input}${under4kLb[i].avgFame})\n`;
+                else if(i === 2) str += `🥉 **${under4kLb[i].name}** (${serverEmojis.find(e => e.name === 'fame').input}${under4kLb[i].avgFame})\n`;
+                else str += `**${i+1}.** ${under4kLb[i].name} (${serverEmojis.find(e => e.name === 'fame').input}${under4kLb[i].avgFame})\n`;
             }
 
             return str;
@@ -41,6 +52,9 @@ module.exports = {
             description: desc(),
             thumbnail: {
                 url: logo
+            },
+            footer: {
+                text: 'Use ?stats to see your personal stats'
             }
         }
 
