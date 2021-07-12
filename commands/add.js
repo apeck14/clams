@@ -9,6 +9,7 @@ module.exports = {
         const rr = await request(`https://proxy.royaleapi.dev/v1/clans/%23${tag}/currentriverrace`);
         const members = rr.clans.find(c => c.name === "Clash of Clams").participants.filter(p => p.decksUsed >= 16 && p.boatAttacks === 0).reverse();
         const reactionEmojis = ['✅', '❌', '⏭️'];
+        const isUnder4k = rr.clan.clanScore < 4000;
 
         if (members.length === 0)
             return message.channel.send({ embed: {color: hex, description: 'There are no players to add yet!'}});
@@ -53,9 +54,9 @@ module.exports = {
 
                 //if player not in database (new player)
                 if (!playerExists)
-                    await collection.insertOne({ name: name, tag: tag, fameTotals: [parseInt(fame)] });
+                    await collection.insertOne({ name: name, tag: tag, fameTotals: [{fame: parseInt(fame), isUnder4k: isUnder4k}] });
                 else
-                    await collection.updateOne({ tag: tag }, { $push: { fameTotals: parseInt(fame) } });
+                    await collection.updateOne({ tag: tag }, { $push: { fameTotals: {fame: parseInt(fame), isUnder4k: isUnder4k} } });
 
                 memEmbed.delete();
                 await message.channel.send(`✅ **${name}** (${tag}): ${serverEmojis.find(e => e.name === 'fame').input}${fame}`);

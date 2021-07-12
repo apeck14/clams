@@ -33,7 +33,7 @@ module.exports = {
                 labels: player.fameTotals.map((f, i) => (`${i}`)),
                 datasets: [{
                     label: 'Fame',
-                    data: player.fameTotals,
+                    data: player.fameTotals.map(s => s.fame),
                     borderColor: hex,
                     backgroundColor: 'rgba(137, 213, 123, 0.23)',
                     fill: true
@@ -73,7 +73,7 @@ module.exports = {
             embed: {
                 color: hex,
                 title: `__${player.name}'s Stats__`,
-                description: `Avg. Fame: **${average(player.fameTotals)}**\n\n**Weeks Counted:**\n${player.fameTotals.join(', ')}`,
+                description: `Avg. Fame: **${average(player.fameTotals.map(s => s.fame))}**\n\n**Weeks Counted:**\n${player.fameTotals.map(s => s.fame).join(', ')}`,
                 thumbnail: {
                     url: logo
                 },

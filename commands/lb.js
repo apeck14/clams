@@ -19,7 +19,7 @@ module.exports = {
             return (sum / arr.length).toFixed(0);
         }
 
-        const leaderboard = memberStats.map(p => ({name: p.name, avgFame: average(p.fameTotals)})).sort((a, b) => b.avgFame - a.avgFame);
+        const leaderboard = memberStats.map(p => ({name: p.name, avgFame: average(p.fameTotals.map(s => s.fame))})).sort((a, b) => b.avgFame - a.avgFame);
         const indeces = (arg === 'full') ? leaderboard.length : 10;
 
         const desc = () => {
