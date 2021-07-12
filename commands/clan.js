@@ -148,7 +148,7 @@ module.exports = {
                     embed: {
                         color: hex,
                         title: `__Clams Weekly Race Data__`,
-                        description: `__**Below 4k:**__\nAvg. Fame: **${below4kAvgFame}**\n**Weeks Counted:**\n${below4kTotals}\n\n__**Above 4k:**__\nAvg. Fame: **${above4kAvgFame}**\n**Weeks Counted:**\n${above4kTotals}`,
+                        description: `__**Below ${serverEmojis.find(e => e.name === 'cwtrophy').input}4k:**__\nAvg. Fame: **${below4kAvgFame}**\n**Weeks Counted:**\n${below4kTotals}\n\n__**Above ${serverEmojis.find(e => e.name === 'cwtrophy').input}4k:**__\nAvg. Fame: **${above4kAvgFame}**\n**Weeks Counted:**\n${above4kTotals}`,
                         thumbnail: {
                             url: logo
                         },
