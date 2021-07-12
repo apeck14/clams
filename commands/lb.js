@@ -9,7 +9,7 @@ module.exports = {
         const collection = db.collection("Players");
 
         const memberTags = await getMembers(tag, true);
-        const memberStats = await collection.find({tag: {$in: memberTags}, 'fameTotals.1': {$exists: true}}).toArray(); //members in clan currently, and have atleast 1 fame score in arr
+        const memberStats = await collection.find({tag: {$in: memberTags}, 'fameTotals.0': {$exists: true}}).toArray(); //members in clan currently, and have atleast 1 fame score in arr
 
         const average = arr => {
             let sum = 0;
